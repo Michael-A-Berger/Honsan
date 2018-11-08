@@ -13,7 +13,7 @@
     "nodemon": "nodemon --watch ./server ./server/app.js",
     "start": "node ./server/app.js",
     "pretest": "eslint ./server --fix",
-    "test": "echo \"All tests completed\"",
+    "test": "echo \"Tests complete\"",
     "watch": "gulp watch"
   },
   "repository": {
