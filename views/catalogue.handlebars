@@ -1,0 +1,29 @@
+<html lang="en">
+<head>
+  <meta charset="utf-8"/>
+  <title>Honsan - Homepage</title>
+  <link rel="shortcut icon" href="/assets/media/favicon.png"/>
+  <link rel="stylesheet" type="text/css" href="/assets/main.css"/>
+</head>
+<body>
+  <ul id='navbar'>
+    <li><a href='/'>New Entry</a></li>
+    <li><a href='/catalogue' class='navbar-selected'>Catalogue</a></li>
+  </ul>
+  <div id='catalogue-container'>
+    {{#each entries}}
+      <div class='catalogue-entry'>
+        <p><b>Eng. Name:</b> {{this.en_name}}</p>
+        <p><b>Jap. Name:</b> {{this.jp_name}}</p>
+        <p><b>Trn. Name:</b> {{this.tr_name}}</p>
+        <p><b>Genres:</b> {{this.genres}}</p>
+        <p><b>Description:</b> {{this.description}}</p>
+        <p><b>Publisher:</b> {{this.publisher}}</p>
+        <p><b>Media Type:</b> {{this.media_type}}</p>
+      </div>
+    {{else}}
+      <h2>No entries.</h2>
+    {{/each}}
+  </div>
+</body>
+</html>

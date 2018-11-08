@@ -1,9 +1,7 @@
-// getHomepage()
-const getHomepage = (rq, rp) => {
-  rp.render('homepage');
-};
+// Getting the controllers
+const EntryController = require('./Entry.js');
 
 // Defining the exports
 module.exports = {
-  getHomepage,
+  Entry: EntryController,
 };

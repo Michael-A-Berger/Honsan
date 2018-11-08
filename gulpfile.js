@@ -19,26 +19,28 @@ const appLoc = './server/app.js';
 
 // Client ES6 to ES5
 gulp.task(clientTask, () => {
-  gulp.src(clientLoc)
-    .pipe(babel({
-      presets: ['env', 'react']
-    }))
-      .pipe(gulp.dest('./hosted'));
+  // WRITTEN
+  
+  return gulp.src(clientLoc)
+          .pipe(babel({
+            presets: ['env']
+          }))
+            .pipe(gulp.dest('hosted'));
 });
 
 // SCSS to CSS
 gulp.task(sassTask, () => {
-  gulp.src(scssLoc)
-    .pipe(sass().on('error', sass.logError))
-      .pipe(gulp.dest('./hosted/'));
+  return gulp.src(scssLoc)
+          .pipe(sass().on('error', sass.logError))
+            .pipe(gulp.dest('./hosted/'));
 });
 
 // ESLint check
 gulp.task(lintTask, () => {
   return gulp.src(['./server/*.js'])
-    .pipe(eslint())
-      .pipe(eslint.format())
-        .pipe(eslint.failAfterError());
+          .pipe(eslint())
+            .pipe(eslint.format())
+              .pipe(eslint.failAfterError());
 });
 
 // Watch

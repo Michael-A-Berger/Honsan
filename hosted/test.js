@@ -1,105 +1,106 @@
+"use strict";
+
 // The global variables
-let searchForm = {};
-let entryForm = {};
-let entryResults = {};
+var searchForm = {};
+var entryForm = {};
+var entryResults = {};
 
 // SendAJAX()
-const SendAJAX = (httpMethod, action, postData, callback) => {
+var SendAJAX = function SendAJAX(httpMethod, action, postData, callback) {
   var xhttp = new XMLHttpRequest();
-  xhttp.onreadystatechange = () => {
+  xhttp.onreadystatechange = function () {
     if (xhttp.readyState === 4) {
       callback(JSON.parse(xhttp.responseText));
     }
   };
-  
+
   // Opening and AJAX request
   xhttp.open(httpMethod, action, true);
-  
+
   if (httpMethod === 'POST') {
     xhttp.setRequestHeader("Content-Type", "application/x-www-form-urlencoded");
-    console.log(`Sending [${postData}] to [${action}]...`);
+    console.log("Sending [" + postData + "] to [" + action + "]...");
   }
-  
+
   // Sending the AJAX request
   xhttp.send(postData);
 };
 
 // KitsuResponse()
-const KitsuResponse = (data) => {
+var KitsuResponse = function KitsuResponse(data) {
   console.dir(data);
 };
 
 // SearchKitsu()
-const SearchKitsu = (term, isAnime) => {
+var SearchKitsu = function SearchKitsu(term, isAnime) {
   // Setting up the search URL
-  let searchUrl = 'https://kitsu.io/api/edge/';
-  if (isAnime) searchUrl += 'anime';
-  else searchUrl += 'manga';
+  var searchUrl = 'https://kitsu.io/api/edge/';
+  if (isAnime) searchUrl += 'anime';else searchUrl += 'manga';
   searchUrl += '?filter[text]=' + term;
-  
+
   // Performing the search
   SendAJAX('GET', searchUrl, null, KitsuResponse);
 };
 
 // EntryResponse()
-const EntryResponse = (data) => {
+var EntryResponse = function EntryResponse(data) {
   if (data.error) {
-    entryResults.innerHTML = `<p><b>ERROR:</b> ${data.error}</p>`;
+    entryResults.innerHTML = "<p><b>ERROR:</b> " + data.error + "</p>";
   } else {
-    entryResults.innerHTML = `<p>Entry added!</p>`;
+    entryResults.innerHTML = "<p>Entry added!</p>";
   }
 };
 
 // SearchSubmitted()
-const SearchSubmitted = (e) => {
+var SearchSubmitted = function SearchSubmitted(e) {
   // Getting the entry form values
-  let searchData = {};
-  for (let num = 0; num < searchForm.elements.length; num++) {
+  var searchData = {};
+  for (var num = 0; num < searchForm.elements.length; num++) {
     searchData[searchForm.elements[num].name] = searchForm.elements[num].value;
   }
-  
+
   // Searching Kitsu
-  SearchKitsu(searchData.query, (searchData.searchType === 'anime' ? true : false));
-  
+  SearchKitsu(searchData.query, searchData.searchType === 'anime' ? true : false);
+
   // Preventing the default behavior from happening
   e.preventDefault();
   return false;
 };
 
 // EntrySubmitted()
-const EntrySubmitted = (e) => {
+var EntrySubmitted = function EntrySubmitted(e) {
   // Getting the entry form values
-  let entryData = {};
-  for (let num = 0; num < entryForm.elements.length; num++) {
+  var entryData = {};
+  for (var num = 0; num < entryForm.elements.length; num++) {
     if (entryForm.elements[num].name !== '') {
       entryData[entryForm.elements[num].name] = entryForm.elements[num].value;
     }
   }
   console.dir(entryData);
-  
+
   // Defining the data string
-  let dataString = '';
-  const entryKeys = Object.keys(entryData);
-  for (let num = 0; num < entryKeys.length; num++) {
-    dataString += entryKeys[num] + '=' + entryData[entryKeys[num]];
-    if (num < entryKeys.length - 1) dataString += '&';
+  var dataString = '';
+  var entryKeys = Object.keys(entryData);
+  for (var _num = 0; _num < entryKeys.length; _num++) {
+    dataString += entryKeys[_num] + '=' + entryData[entryKeys[_num]];
+    if (_num < entryKeys.length - 1) dataString += '&';
   }
-  
+
   // Sending the AJAX call to make the entry
   SendAJAX('POST', '/make_entry', dataString, EntryResponse);
-  
+
   // Preventing the default behavior from happening
   e.preventDefault();
   return false;
 };
 
 // setup()
-const setup = (csrfJSON) => {
+var setup = function setup(csrfJSON) {
   // Getting the native page elements
   searchForm = document.querySelector('#search-form');
   entryForm = document.querySelector('#entry-form');
   entryResults = document.querySelector('#entry-results');
-  
+
   // Setting up the form functions
   searchForm.addEventListener('submit', SearchSubmitted);
   entryForm.addEventListener('submit', EntrySubmitted);
@@ -107,23 +108,3 @@ const setup = (csrfJSON) => {
 
 // Setting up the 
 window.onload = setup;
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-

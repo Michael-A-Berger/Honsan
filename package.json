@@ -9,10 +9,11 @@
   "main": "./server/app.js",
   "scripts": {
     "build": "gulp build",
+    "client": "gulp client",
     "nodemon": "nodemon --watch ./server ./server/app.js",
     "start": "node ./server/app.js",
     "pretest": "eslint ./server --fix",
-    "test": "\"All tests completed\"",
+    "test": "echo \"All tests completed\"",
     "watch": "gulp watch"
   },
   "repository": {
@@ -26,13 +27,13 @@
   },
   "homepage": "https://github.com/Michael-A-Berger/Honsan#readme",
   "devDependencies": {
-    "@babel/core": "^7.1.5",
-    "babel-cli": "^6.26.0",
+    "babel-core": "^6.26.3",
+    "babel-preset-env": "^1.7.0",
     "eslint": "^5.8.0",
     "eslint-config-airbnb": "^17.1.0",
     "eslint-plugin-import": "^2.14.0",
     "gulp": "^3.9.1",
-    "gulp-babel": "^8.0.0",
+    "gulp-babel": "^7.0.1",
     "gulp-eslint": "^5.0.0",
     "gulp-nodemon": "^2.4.1",
     "gulp-sass": "^4.0.2",
