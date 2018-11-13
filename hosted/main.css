@@ -5,11 +5,14 @@ body {
 h1 {
   color: #6666CC; }
 
-#search-form {
-  display: none; }
-
 .catalogue-entry {
   padding: 10px;
   margin: 10px;
   border: 1px solid #000000;
   border-radius: 5px; }
+
+.entry-copy {
+  padding: 10px;
+  margin: 10px;
+  border: 1px solid #CC6666;
+  border-radius: 2px; }

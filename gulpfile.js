@@ -20,7 +20,7 @@ const appLoc = './server/app.js';
 // Client ES6 to ES5
 gulp.task(clientTask, () => {
   // WRITTEN
-  
+
   return gulp.src(clientLoc)
           .pipe(babel({
             presets: ['env']
@@ -47,15 +47,15 @@ gulp.task(lintTask, () => {
 gulp.task('watch', () => {
   // Watching for client ES6 changes
   gulp.watch(clientLoc, [clientTask]);
-  
+
   // Watching for SCSS changes
   gulp.watch(scssLoc, [sassTask]);
-  
+
   // Watching for server-side changes
   nodemon({
     script: appLoc,
     ext: 'js',
-    tasks: [lintTask]
+    tasks: [lintTask],
   });
 });
 
@@ -66,23 +66,3 @@ gulp.task('build', () => {
   gulp.start(sassTask);
   gulp.start(lintTask);
 });
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-

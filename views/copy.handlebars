@@ -1,0 +1,39 @@
+<html lang="en">
+<head>
+  <meta charset="utf-8"/>
+  <title>Honsan - Add Copy</title>
+  <link rel="shortcut icon" href="/assets/media/favicon.png"/>
+  <link rel="stylesheet" type="text/css" href="/assets/main.css"/>
+  <script src="/assets/add_copy.js" type="text/javascript"></script>
+</head>
+<body>
+  <ul id='navbar'>
+    <li><a href='/'>New Entry</a></li>
+    <li><a href='/add_copy' class='navbar-selected'>Add Copy</a></li>
+    <li><a href='/catalogue'>Catalogue</a></li>
+  </ul>
+  <form id='copy-form'
+          name='copy-form'
+          class='copy-form'>
+    <label for='entryId'>Entry ID:</label>
+    <input class='copy-entry-id' type='text' name='entryId' placeholder='entry id' />
+    <label for='name'>Name:</label>
+    <input class='copy-name' type='text' name='name' placeholder='name' />
+    <label for='nickname'>Nickname:</label>
+    <input class='copy-nickname' type='text' name='nickname' placeholder='nickname' />
+    <label for='quality'>Quality:</label>
+    <select name='quality'>
+      <option value='new'>New</option>
+      <option value='great'>Great</option>
+      <option value='decent' selected>Decent</option>
+      <option value='rough'>Rough</option>
+      <option value='poor'>Poor</option>
+    </select>
+    <h3>Description:</h3>
+    <textarea class='copy-description' form='copy-form' rows='6' cols='80' name='description' placeholder='description'></textarea>
+    <input type='hidden' name='_csrf' value='{{csrfToken}}'>
+    <input class='copy-submit' type='submit' value='Add Copy'/>
+  </form>
+  <div id='copy-results'></div>
+</body>
+</html>

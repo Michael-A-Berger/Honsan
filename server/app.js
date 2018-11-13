@@ -10,7 +10,7 @@ const expressHandlebars = require('express-handlebars');
 const mongoose = require('mongoose');
 const session = require('express-session');
 const RedisStore = require('connect-redis')(session);
-// const csurf = require('csurf');
+const csurf = require('csurf');
 const router = require('./router.js');
 
 // Getting the environment variables
@@ -65,12 +65,12 @@ app.disable('x-powered-by');
 app.use(cookieParser());
 
 // Preventing CSRF session hijacking
-// app.use(csurf());
-// app.use((err, rq, rp, next) => {
-//   if (err.code !== 'EBADCSRFTOKEN') return next(err);
-//   console.log('Missing CSRF token');
-//   return false;
-// });
+app.use(csurf());
+app.use((err, rq, rp, next) => {
+  if (err.code !== 'EBADCSRFTOKEN') return next(err);
+  console.log('Missing CSRF token');
+  return false;
+});
 
 // Setting the app resource routes
 router(app);

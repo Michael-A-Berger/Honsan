@@ -1,0 +1,53 @@
+<html lang="en">
+<head>
+  <meta charset="utf-8"/>
+  {{#if entry}}
+    <title>Honsan - {{entry.en_name}}</title>
+  {{else}}
+    <title>Honsan - Bad Entry</title>
+  {{/if}}
+  <link rel="shortcut icon" href="/assets/media/favicon.png"/>
+  <link rel="stylesheet" type="text/css" href="/assets/main.css"/>
+</head>
+<body>
+  <ul id='navbar'>
+    <li><a href='/'>New Entry</a></li>
+    <li><a href='/add_copy'>Add Copy</a></li>
+    <li><a href='/catalogue'>Catalogue</a></li>
+  </ul>
+  <div id='catalogue-container'>
+    {{#if entry}}
+      <div class='catalogue-entry'>
+        <p><b>Entry ID:</b> {{entry.entry_id}}</p>
+        <p><b>Eng. Name:</b> {{entry.en_name}}</p>
+        <p><b>Jap. Name:</b> {{entry.jp_name}}</p>
+        <p><b>Trn. Name:</b> {{entry.tr_name}}</p>
+        <p><b>Genres:</b> {{entry.genres}}</p>
+        <p><b>Description:</b> {{entry.description}}</p>
+        <p><b>Publisher:</b> {{entry.publisher}}</p>
+        <p><b>Media Type:</b> {{entry.media_type}}</p>
+        <div class='copies-contrainer'>
+          {{#each entry.copies}}
+            <div class='entry-copy'>
+              <p>{{this.name}}</p>
+              <p>{{this.nickname}}</p>
+              <p>{{this.quality}}</p>
+              <p>{{this.description}}</p>
+              {{#if this.borrower}}
+                <p>{{this}}</p>
+              {{/if}}
+              {{#if this.due_date}}
+                <p>{{this}}</p>
+              {{/if}}
+            </div>
+          {{else}}
+            <div>No copies created yet</div>
+          {{/each}}
+        </div>
+      </div>
+    {{else}}
+      <h2>Entry ID is not valid.</h2>
+    {{/if}}
+  </div>
+</body>
+</html>

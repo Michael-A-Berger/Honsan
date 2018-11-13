@@ -9,6 +9,11 @@ let EntryModel = {};
 
 // Defining the entry schema
 const EntrySchema = new mongoose.Schema({
+  entry_id: {
+    type: String,
+    required: true,
+    unique: true,
+  },
   en_name: {
     type: String,
     required: true,
@@ -44,12 +49,13 @@ const EntrySchema = new mongoose.Schema({
   },
   media_type: {
     type: String,
-    enum: ['anime', 'manga', 'other'],
+    required: true,
   },
 });
 
 // toAPI()
 EntrySchema.statics.ToAPI = doc => ({
+  entry_id: doc.entryId,
   en_name: doc.engName,
   jp_name: doc.japName,
   tr_name: doc.trnName,
@@ -59,10 +65,11 @@ EntrySchema.statics.ToAPI = doc => ({
   media_type: doc.mediaType,
 });
 
-// getAll()
-EntrySchema.statics.GetAll = (callback) => {
+// SelectString()
+const SelectString = (params) => {
   // Defining the return schema properties array
-  const propsToReturn = ['en_name',
+  let propsToReturn = ['entry_id',
+    'en_name',
     'jp_name',
     'tr_name',
     'catalogue_date',
@@ -70,14 +77,47 @@ EntrySchema.statics.GetAll = (callback) => {
     'description',
     'genres',
     'media_type'];
+
+  // IF the passed-in params are defined...
+  if (params) propsToReturn = params;
+
+  // Constructing the select property string
   let propString = '';
   for (let num = 0; num < propsToReturn.length; num++) {
     propString += `${propsToReturn[num]} `;
   }
   propString = propString.trim();
 
-  // Returning all of the entries
-  return EntryModel.find().select(propString).exec(callback);
+  // Returning the select string
+  return propString;
+};
+
+// GetAll()
+EntrySchema.statics.GetAll = (callback) => {
+  EntryModel.find().select(SelectString()).exec(callback);
+};
+
+// GetByID()
+EntrySchema.statics.GetByID = (id, callback) => {
+  EntryModel.findOne({ entry_id: id }, SelectString(), callback);
+};
+
+// Search()
+EntrySchema.statics.Search = (term, callback) => {
+  // Defining the search object
+  const searchObject = {
+    $or: [
+      { en_name: term },
+      { jp_name: term },
+      { tr_name: term },
+      { genres: term },
+      { publisher: term },
+      { description: term },
+    ],
+  };
+
+  // Searching the database
+  EntryModel.find(searchObject).select(SelectString()).exec(callback);
 };
 
 // Setting the entry model to the schema

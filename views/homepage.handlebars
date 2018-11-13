@@ -4,12 +4,13 @@
   <title>Honsan - Homepage</title>
   <link rel="shortcut icon" href="/assets/media/favicon.png"/>
   <link rel="stylesheet" type="text/css" href="/assets/main.css"/>
-  <script src="/assets/test.js" type="text/javascript"></script>
+  <script src="/assets/add_entry.js" type="text/javascript"></script>
 </head>
 <body>
   <ul id='navbar'>
-    <li><a href='/'>New Entry</a></li>
-    <li><a href='/catalogue' class='navbar-selected'>Catalogue</a></li>
+    <li><a href='/' class='navbar-selected'>New Entry</a></li>
+    <li><a href='/add_copy'>Add Copy</a></li>
+    <li><a href='/catalogue'>Catalogue</a></li>
   </ul>
   <form id='search-form'
         name='search-form'
@@ -45,6 +46,7 @@
       <option value='manga'>Manga</option>
       <option value='other'>Other</option>
     </select>
+    <input type='hidden' name='_csrf' value='{{csrfToken}}'>
     <input class='entry-submit' type='submit' value='Add to Catalogue'/>
   </form>
   <div id='entry-results'></div>

@@ -5,7 +5,7 @@ let entryResults = {};
 
 // SendAJAX()
 const SendAJAX = (httpMethod, action, postData, callback) => {
-  var xhttp = new XMLHttpRequest();
+  let xhttp = new XMLHttpRequest();
   xhttp.onreadystatechange = () => {
     if (xhttp.readyState === 4) {
       callback(JSON.parse(xhttp.responseText));
@@ -94,7 +94,7 @@ const EntrySubmitted = (e) => {
 };
 
 // setup()
-const setup = (csrfJSON) => {
+const setup = () => {
   // Getting the native page elements
   searchForm = document.querySelector('#search-form');
   entryForm = document.querySelector('#entry-form');

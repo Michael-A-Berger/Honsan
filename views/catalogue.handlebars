@@ -8,12 +8,13 @@
 <body>
   <ul id='navbar'>
     <li><a href='/'>New Entry</a></li>
+    <li><a href='/add_copy'>Add Copy</a></li>
     <li><a href='/catalogue' class='navbar-selected'>Catalogue</a></li>
   </ul>
   <div id='catalogue-container'>
     {{#each entries}}
       <div class='catalogue-entry'>
-        <p><b>Eng. Name:</b> {{this.en_name}}</p>
+        <h2><a href='/entry?id={{this.entry_id}}'>{{this.en_name}}</a></h2>
         <p><b>Jap. Name:</b> {{this.jp_name}}</p>
         <p><b>Trn. Name:</b> {{this.tr_name}}</p>
         <p><b>Genres:</b> {{this.genres}}</p>

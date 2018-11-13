@@ -1,0 +1,22 @@
+=== TUESDAY ===
+
+- Finish Models + Controllers
+    - Member
+    - Account
+
+=== WEDNESDAY ===
+
+- Middleware + Searching capabilities
+    - Middleware
+        - Logging in
+    - Searching
+        - Catalogue
+        - Members
+
+=== THURSDAY ===
+
+- CSS Styling + banner
+
+=== FRIDAY (MORNING + AFTERNOON) ===
+
+- Documentation
