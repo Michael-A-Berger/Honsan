@@ -5,6 +5,9 @@ body {
 h1 {
   color: #6666CC; }
 
+.navbar-selected {
+  color: springgreen; }
+
 .catalogue-entry {
   padding: 10px;
   margin: 10px;

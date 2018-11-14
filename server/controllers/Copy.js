@@ -58,7 +58,7 @@ const MakeCopy = (rq, rp) => {
 
 // GetAddCopyPage()
 const GetAddCopyPage = (rq, rp) => {
-  rp.render('copy', { csrfToken: rq.csrfToken() });
+  rp.render('add_copy', { csrfToken: rq.csrfToken() });
 };
 
 // Setting the exports

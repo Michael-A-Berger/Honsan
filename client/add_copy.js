@@ -2,28 +2,6 @@
 let copyForm = {};
 let copyResults = {};
 
-// SendAJAX()
-const SendAJAX = (httpMethod, action, postData, callback) => {
-  let xhttp = new XMLHttpRequest();
-  xhttp.onreadystatechange = () => {
-    if (xhttp.readyState === 4) {
-      console.log(xhttp.responseText);
-      callback(JSON.parse(xhttp.responseText));
-    }
-  };
-  
-  // Opening and AJAX request
-  xhttp.open(httpMethod, action, true);
-  
-  if (httpMethod === 'POST') {
-    xhttp.setRequestHeader("Content-Type", "application/x-www-form-urlencoded");
-    console.log(`Sending [${postData}] to [${action}]...`);
-  }
-  
-  // Sending the AJAX request
-  xhttp.send(postData);
-};
-
 // CopyResponse()
 const CopyResponse = (data) => {
   if (data.error) {
@@ -35,20 +13,20 @@ const CopyResponse = (data) => {
 
 // CopySubmitted()
 const CopySubmitted = (e) => {
-  // Getting the entry form values
-  let entryData = {};
+  // Getting the Copy form values
+  let copyData = {};
   for (let num = 0; num < copyForm.elements.length; num++) {
     if (copyForm.elements[num].name !== '') {
-      entryData[copyForm.elements[num].name] = copyForm.elements[num].value;
+      copyData[copyForm.elements[num].name] = copyForm.elements[num].value;
     }
   }
-  console.dir(entryData);
+  console.dir(copyData);
   
   // Defining the data string
   let dataString = '';
-  const entryKeys = Object.keys(entryData);
+  const entryKeys = Object.keys(copyData);
   for (let num = 0; num < entryKeys.length; num++) {
-    dataString += entryKeys[num] + '=' + entryData[entryKeys[num]];
+    dataString += entryKeys[num] + '=' + copyData[entryKeys[num]];
     if (num < entryKeys.length - 1) dataString += '&';
   }
   

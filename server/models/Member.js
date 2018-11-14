@@ -41,10 +41,6 @@ const MemberSchema = new mongoose.Schema({
     required: true,
     validate: [validCardsArray, '{PATH} must be greater than zero'],
   },
-  borrowed_copies: {
-    type: [String],
-    required: false,
-  },
 });
 
 // ToAPI()
@@ -54,7 +50,6 @@ MemberSchema.statics.ToAPI = doc => ({
   last_name: doc.lastName,
   email: doc.email,
   cards: doc.cards,
-  // [ borrowed_copies ] is not defined until a copy is signed out to them
 });
 
 // SelectString()
@@ -65,8 +60,7 @@ const SelectStr = (params) => {
     'last_name',
     'added_date',
     'email',
-    'cards',
-    'borrowed_copies']; // Will get replaced in controller
+    'cards'];
 
   // IF specific props to retreive were passed in...
   if (params) {
@@ -87,6 +81,11 @@ const SelectStr = (params) => {
 // GetAll()
 MemberSchema.statics.GetAll = callback => (MemberModel.find().select(SelectStr()).exec(callback));
 
+// GetByID()
+MemberSchema.statics.GetByID = (id, callback) => {
+  MemberModel.findOne({ member_id: id }, SelectStr(), callback);
+};
+
 // SearchAllProperties()
 MemberSchema.statics.SearchMembers = (term, callback) => {
   // Defining the search terms
@@ -103,7 +102,7 @@ MemberSchema.statics.SearchMembers = (term, callback) => {
 };
 
 // Setting the entry model to the schema
-MemberModel = mongoose.model('Copy', MemberSchema);
+MemberModel = mongoose.model('Member', MemberSchema);
 
 // Setting the exports
 module.exports = {

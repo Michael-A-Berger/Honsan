@@ -4,7 +4,7 @@ const crypto = require('crypto');
 // Getting all of the models
 const EntryModel = require('./Entry.js');
 const CopyModel = require('./Copy.js');
-// const MemberModel = require('./Member.js');
+const MemberModel = require('./Member.js');
 
 // Setting the constants
 const lengthUID = 16;
@@ -36,7 +36,7 @@ const UnexpectedServerError = (rq, rp) => {
 module.exports = {
   Entry: EntryModel,
   Copy: CopyModel,
-  // Member: MemberModel,
+  Member: MemberModel,
   GenerateUniqueID,
   CurrentTime,
   UnexpectedServerError,

@@ -102,6 +102,19 @@ EntrySchema.statics.GetByID = (id, callback) => {
   EntryModel.findOne({ entry_id: id }, SelectString(), callback);
 };
 
+// GetEntryNameFromID()
+EntrySchema.statics.GetEntryNameFromID = (id) => {
+  let entryName = null;
+
+  return EntryModel.findOne({ entry_id: id }, 'en_name', (error, doc) => {
+    if (doc) {
+      entryName = doc.en_name;
+    }
+
+    return entryName;
+  });
+};
+
 // Search()
 EntrySchema.statics.Search = (term, callback) => {
   // Defining the search object

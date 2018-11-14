@@ -1,0 +1,52 @@
+<html lang="en">
+<head>
+  <meta charset="utf-8"/>
+  {{#if member}}
+    <title>Honsan - {{member.first_name}} {{member.last_name}}</title>
+  {{else}}
+    <title>Honsan - Bad Member</title>
+  {{/if}}
+  <link rel="shortcut icon" href="/assets/media/favicon.png"/>
+  <link rel="stylesheet" type="text/css" href="/assets/main.css"/>
+</head>
+<body>
+  <ul id='navbar'>
+    <li><a href='/'>New Entry</a></li>
+    <li><a href='/add_copy'>Add Copy</a></li>
+    <li><a href='/add_member'>Add Member</a></li>
+    <li><a href='/catalogue'>Catalogue</a></li>
+    <li><a href='/member_list'>Member List</a></li>
+  </ul>
+  <div id='catalogue-container'>
+    {{#if member}}
+      <div class='catalogue-entry'>
+        <p><b>Member ID:</b> {{member.member_id}}</p>
+        <p><b>Name:</b> {{member.first_name}} {{member.last_name}}</p>
+        <p><b>Email:</b> {{member.email}}</p>
+        <p><b>Cards:</b> 
+          {{#each member.cards}}
+            <span class='member-card'>{{this}}</span>{{#if @last}}{{else}}, {{/if}}
+          {{else}}
+            <span>No cards assigned (somehow...)</span>
+          {{/each}}
+        </p>
+        <div class='borrowed-container'>
+          {{#each member.borrowed}}
+            <div class='member-borrowed'>
+              <p><a href='/entry?id={{this.entry_id}}'>{{this.entry_name}}</a></p>
+              <p>{{this.name}}</p>
+              <p>{{this.nickname}}</p>
+              <p>{{this.quality}}</p>
+              <p>Due {{this.due_date}}</p>
+            </div>
+          {{else}}
+            <p>No borrowed items.</p>
+          {{/each}}
+        </div>
+      </div>
+    {{else}}
+      <h2>Member ID is not valid.</h2>
+    {{/if}}
+  </div>
+</body>
+</html>

@@ -11,7 +11,7 @@ const MakeEntry = (rq, rp) => {
     return rp.status(400).json({ error: 'Every Entry must have an English name!' });
   }
 
-  // Creating the new entry
+  // Creating the new Entry
   const entryData = {
     engName: `${rq.body.engName}`,
     japName: `${rq.body.japName}`,
@@ -65,7 +65,7 @@ const GetCatalogue = (request, response) => {
 
 // GetHomepage()
 const GetHomepage = (rq, rp) => {
-  rp.render('homepage', { csrfToken: rq.csrfToken() });
+  rp.render('add_entry', { csrfToken: rq.csrfToken() });
 };
 
 // GetCataloguePage()
@@ -107,8 +107,6 @@ const GetEntryPage = (rq, rp) => {
       // IF there are some Copy docs assigned to the Entry doc...
       if (docCopies.length > 0) {
         currentEntry.copies = docCopies;
-      } else {
-        currentEntry.copies = null;
       }
 
       // console.dir(currentEntry);

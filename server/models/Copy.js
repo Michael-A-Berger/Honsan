@@ -67,13 +67,14 @@ CopySchema.statics.ToAPI = doc => ({
 const SelectString = (params) => {
   // Defining the return schema properties array
   let propsToReturn = ['copy_id',
+    'entry_id',
     'name',
     'nickname',
     'added_date',
     'description',
     'quality',
     'borrower', // Will get replaced in controller
-    'due_date']; // Will get replaced in controller
+    'due_date'];
 
   // IF specific props to retreive were passed in...
   if (params !== undefined && params !== null) {
@@ -94,9 +95,19 @@ const SelectString = (params) => {
 // GetAll()
 CopySchema.statics.GetAll = callback => (CopyModel.find().select(SelectString()).exec(callback));
 
+// GetByID()
+CopySchema.statics.GetByID = (id, callback) => {
+  CopyModel.findOne({ copy_id: id }, SelectString(), callback);
+};
+
 // GetAllOfEntry()
 CopySchema.statics.GetAllOfEntry = (entryId, callback) => {
   CopyModel.find({ entry_id: entryId }).select(SelectString()).exec(callback);
+};
+
+// GetAllBorrowedByMember()
+CopySchema.statics.GetAllBorrowedByMember = (memberId, callback) => {
+  CopyModel.find({ borrower: memberId }).select(SelectString()).exec(callback);
 };
 
 // GetByNickname()

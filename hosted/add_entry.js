@@ -1,30 +1,9 @@
-"use strict";
+'use strict';
 
 // The global variables
 var searchForm = {};
 var entryForm = {};
 var entryResults = {};
-
-// SendAJAX()
-var SendAJAX = function SendAJAX(httpMethod, action, postData, callback) {
-  var xhttp = new XMLHttpRequest();
-  xhttp.onreadystatechange = function () {
-    if (xhttp.readyState === 4) {
-      callback(JSON.parse(xhttp.responseText));
-    }
-  };
-
-  // Opening and AJAX request
-  xhttp.open(httpMethod, action, true);
-
-  if (httpMethod === 'POST') {
-    xhttp.setRequestHeader("Content-Type", "application/x-www-form-urlencoded");
-    console.log("Sending [" + postData + "] to [" + action + "]...");
-  }
-
-  // Sending the AJAX request
-  xhttp.send(postData);
-};
 
 // KitsuResponse()
 var KitsuResponse = function KitsuResponse(data) {
@@ -45,9 +24,9 @@ var SearchKitsu = function SearchKitsu(term, isAnime) {
 // EntryResponse()
 var EntryResponse = function EntryResponse(data) {
   if (data.error) {
-    entryResults.innerHTML = "<p><b>ERROR:</b> " + data.error + "</p>";
+    entryResults.innerHTML = '<p><b>ERROR:</b> ' + data.error + '</p>';
   } else {
-    entryResults.innerHTML = "<p>Entry added!</p>";
+    entryResults.innerHTML = '<p>Entry added!</p>';
   }
 };
 
