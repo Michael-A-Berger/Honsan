@@ -3,6 +3,7 @@ const SendAJAX = (httpMethod, action, postData, callback) => {
   let xhttp = new XMLHttpRequest();
   xhttp.onreadystatechange = () => {
     if (xhttp.readyState === 4) {
+      // console.log(xhttp.responseText);
       callback(JSON.parse(xhttp.responseText));
     }
   };

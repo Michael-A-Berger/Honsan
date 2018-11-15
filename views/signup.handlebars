@@ -9,11 +9,8 @@
 </head>
 <body>
   <ul id='navbar'>
-    <li><a href='/'>New Entry</a></li>
-    <li><a href='/add_copy'>Add Copy</a></li>
-    <li><a href='/add_member'>Add Member</a></li>
-    <li><a href='/catalogue'>Catalogue</a></li>
-    <li><a href='/member_list'>Member List</a></li>
+    <li><a href='/login'>Log In</a></li>
+    <li><a href='/signup' class='navbar-selected'>Sign Up</a></li>
   </ul>
   <div id='signup-container'>
     <form id='signup-form'
@@ -22,9 +19,9 @@
       <label for='username'>Username:</label>
       <input class='signup-username' type='text' name='username' placeholder='username' />
       <label for='password'>Password:</label>
-      <input class='signup-password' type='text' name='password' placeholder='password' />
+      <input class='signup-password' type='password' name='password' placeholder='password' />
       <label for='password2'>Retype Password:</label>
-      <input class='signup-password2' type='text' name='password2' placeholder='password (again)' />
+      <input class='signup-password2' type='password' name='password2' placeholder='password (again)' />
       <input type='hidden' name='_csrf' value='{{csrfToken}}'>
       <input class='signup-submit' type='submit' value='Sign Up'/>
     </form>

@@ -21,7 +21,6 @@ const GenerateUniqueID = () => {
 // CurrentTime()
 const CurrentTime = () => {
   const now = new Date();
-  console.dir(now);
   let toReturn = `${now.getFullYear()}-${now.getMonth() + 1}-${now.getDate()} `;
   toReturn += `${now.getHours()}h${now.getMinutes()}m${now.getSeconds()}s`;
   return toReturn;

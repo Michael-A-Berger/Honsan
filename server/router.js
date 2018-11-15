@@ -17,9 +17,6 @@ const router = (app) => {
   app.get('/catalogue',
     middleware.RequiresLogin,
     controllers.Entry.GetCataloguePage);
-  app.get('/add_copy',
-    middleware.RequiresLogin,
-    controllers.Copy.GetAddCopyPage);
   app.get('/add_member',
     middleware.RequiresLogin,
     controllers.Member.GetAddMemberPage);
@@ -51,6 +48,15 @@ const router = (app) => {
   app.post('/make_member',
     middleware.RequiresLogin,
     controllers.Member.MakeMember);
+  app.post('/signout_nickname',
+    middleware.RequiresLogin,
+    controllers.Copy.SignOutByNickname);
+  app.post('/signin_copy',
+    middleware.RequiresLogin,
+    controllers.Copy.SignInByID);
+  app.post('/renew_copy',
+    middleware.RequiresLogin,
+    controllers.Copy.RenewByID);
   app.post('/confirm_login',
     middleware.RequiresLogout,
     middleware.RequiresSecure,

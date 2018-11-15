@@ -9,11 +9,8 @@
 </head>
 <body>
   <ul id='navbar'>
-    <li><a href='/'>New Entry</a></li>
-    <li><a href='/add_copy'>Add Copy</a></li>
-    <li><a href='/add_member'>Add Member</a></li>
-    <li><a href='/catalogue'>Catalogue</a></li>
-    <li><a href='/member_list'>Member List</a></li>
+    <li><a href='/login' class='navbar-selected'>Log In</a></li>
+    <li><a href='/signup'>Sign Up</a></li>
   </ul>
   <div id='login-container'>
     <form id='login-form'
@@ -22,7 +19,7 @@
       <label for='username'>Username:</label>
       <input class='login-username' type='text' name='username' placeholder='username' />
       <label for='password'>Password:</label>
-      <input class='login-password' type='text' name='password' placeholder='password' />
+      <input class='login-password' type='password' name='password' placeholder='password' />
       <input type='hidden' name='_csrf' value='{{csrfToken}}'>
       <input class='login-submit' type='submit' value='Log In'/>
     </form>

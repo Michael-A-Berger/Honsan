@@ -18,6 +18,10 @@ const CopySchema = new mongoose.Schema({
     type: String,
     required: true,
   },
+  entry_name: {
+    type: String,
+    required: true,
+  },
   name: {
     type: String,
     required: true,
@@ -55,6 +59,7 @@ const CopySchema = new mongoose.Schema({
 CopySchema.statics.ToAPI = doc => ({
   copy_id: doc.copyId,
   entry_id: doc.entryId,
+  entry_name: doc.entryName,
   name: doc.name,
   nickname: doc.nickname,
   description: doc.description,
@@ -63,18 +68,55 @@ CopySchema.statics.ToAPI = doc => ({
   // [ due_date ] is not defined until copy is signed out
 });
 
+// ChangeProperties()
+const ChangeProperties = (doc, obj) => {
+  // Setting the document to an assignable object
+  const docCopy = doc;
+
+  // Changing the properties of the document ([ copy_id ] will NEVER change)
+  if (obj.entry_id !== docCopy.entry_id) {
+    docCopy.entry_id = obj.entry_id;
+  }
+  if (obj.entry_name !== docCopy.entry_name) {
+    docCopy.entry_name = obj.entry_name;
+  }
+  if (obj.name !== docCopy.name) {
+    docCopy.name = obj.name;
+  }
+  if (obj.nickname !== docCopy.nickname) {
+    docCopy.nickname = obj.nickname;
+  }
+  // [added_date] will NEVER change
+  if (obj.description !== docCopy.description) {
+    docCopy.description = obj.description;
+  }
+  if (obj.quality !== docCopy.quality) {
+    docCopy.quality = obj.quality;
+  }
+  if (obj.borrower !== docCopy.borrower) {
+    docCopy.borrower = obj.borrower;
+  }
+  if (obj.due_date !== docCopy.due_date) {
+    docCopy.due_date = obj.due_date;
+  }
+
+  // Returning the updated document
+  return docCopy;
+};
+
 // SelectString()
 const SelectString = (params) => {
   // Defining the return schema properties array
   let propsToReturn = ['copy_id',
     'entry_id',
+    'entry_name',
     'name',
     'nickname',
     'added_date',
     'description',
     'quality',
     'borrower', // Will get replaced in controller
-    'due_date'];
+    'due_date']; // Will get replaced in controller
 
   // IF specific props to retreive were passed in...
   if (params !== undefined && params !== null) {
@@ -112,7 +154,29 @@ CopySchema.statics.GetAllBorrowedByMember = (memberId, callback) => {
 
 // GetByNickname()
 CopySchema.statics.GetByNickname = (nick, callback) => {
-  CopyModel.find({ nickname: nick }).select(SelectString()).exec(callback);
+  CopyModel.findOne({ nickname: nick }, SelectString(), callback);
+};
+
+// Update()
+CopySchema.statics.Update = (copyObj, callback) => {
+  // Searching for the specified Copy
+  CopyModel.findOne({ copy_id: copyObj.copy_id }).exec((error, doc) => {
+    // IF no Copy was found, return with just the error
+    if (error) {
+      return callback(error, false);
+    }
+
+    // Updating the retreived Copy document
+    const updatedDoc = ChangeProperties(doc, copyObj);
+
+    // Saving the updated Copy
+    return updatedDoc.save((err) => {
+      if (err) {
+        return callback(err);
+      }
+      return callback(null);
+    });
+  });
 };
 
 // Setting the entry model to the schema

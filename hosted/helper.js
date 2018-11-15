@@ -5,6 +5,7 @@ var SendAJAX = function SendAJAX(httpMethod, action, postData, callback) {
   var xhttp = new XMLHttpRequest();
   xhttp.onreadystatechange = function () {
     if (xhttp.readyState === 4) {
+      // console.log(xhttp.responseText);
       callback(JSON.parse(xhttp.responseText));
     }
   };

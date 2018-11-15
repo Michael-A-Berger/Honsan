@@ -8,11 +8,12 @@
   {{/if}}
   <link rel="shortcut icon" href="/assets/media/favicon.png"/>
   <link rel="stylesheet" type="text/css" href="/assets/main.css"/>
+  <script src="/assets/helper.js" type="text/javascript"></script>
+  <script src="/assets/add_copy.js" type="text/javascript"></script>
 </head>
 <body>
   <ul id='navbar'>
     <li><a href='/'>New Entry</a></li>
-    <li><a href='/add_copy'>Add Copy</a></li>
     <li><a href='/add_member'>Add Member</a></li>
     <li><a href='/catalogue'>Catalogue</a></li>
     <li><a href='/member_list'>Member List</a></li>
@@ -20,8 +21,7 @@
   <div id='catalogue-container'>
     {{#if entry}}
       <div class='catalogue-entry'>
-        <p><b>Entry ID:</b> {{entry.entry_id}}</p>
-        <p><b>Eng. Name:</b> {{entry.en_name}}</p>
+        <h1>{{entry.en_name}}</h1>
         <p><b>Jap. Name:</b> {{entry.jp_name}}</p>
         <p><b>Trn. Name:</b> {{entry.tr_name}}</p>
         <p><b>Genres:</b> {{entry.genres}}</p>
@@ -36,16 +36,41 @@
               <p>{{this.quality}}</p>
               <p>{{this.description}}</p>
               {{#if this.borrower}}
-                <p>{{this}}</p>
+                <p><a href='/member?id={{this.borrower}}'>Signed Out</a></p>
               {{/if}}
               {{#if this.due_date}}
-                <p>{{this}}</p>
+                <p>{{this.due_date}}</p>
               {{/if}}
             </div>
           {{else}}
             <div>No copies created yet</div>
           {{/each}}
         </div>
+        <div id='add-copies-container'>
+          <h2>Add Copy:</h2>
+            <form id='copy-form'
+                    name='copy-form'
+                    class='copy-form'>
+              <input class='copy-entry-id' type='hidden' name='entryId' value='{{entry.entry_id}}' />
+              <label for='name'>Name:</label>
+              <input class='copy-name' type='text' name='name' placeholder='name' />
+              <label for='nickname'>Nickname:</label>
+              <input class='copy-nickname' type='text' name='nickname' placeholder='nickname' />
+              <label for='quality'>Quality:</label>
+              <select name='quality'>
+                <option value='new'>New</option>
+                <option value='great'>Great</option>
+                <option value='decent' selected>Decent</option>
+                <option value='rough'>Rough</option>
+                <option value='poor'>Poor</option>
+              </select>
+              <h3>Description:</h3>
+              <textarea class='copy-description' form='copy-form' name='description' placeholder='description'></textarea>
+              <input type='hidden' name='_csrf' value='{{csrfToken}}'>
+              <input class='copy-submit' type='submit' value='Add Copy'/>
+            </form>
+        </div>
+        <div id='copy-results'></div>
       </div>
     {{else}}
       <h2>Entry ID is not valid.</h2>

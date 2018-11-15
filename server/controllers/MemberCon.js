@@ -2,7 +2,7 @@
 const models = require('../models');
 
 // Setting the Model constants
-const _Entry = models.Entry;
+// const _Entry = models.Entry;
 const _Copy = models.Copy;
 const _Member = models.Member;
 
@@ -90,10 +90,6 @@ const GetMemberPage = (rq, rp) => {
       // IF books are borrowed, add them to the returned member
       if (docBorrowed.length > 0) {
         currentMember.borrowed = docBorrowed;
-        for (let num = 0; num < docBorrowed.length; num++) {
-          const n = _Entry.Model.GetEntryNameFromID(currentMember.borrowed[num].entry_id);
-          currentMember.borrowed[num].entry_name = n;
-        }
       }
 
       // Sending the Member page
