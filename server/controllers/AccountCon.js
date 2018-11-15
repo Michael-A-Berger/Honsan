@@ -69,21 +69,21 @@ const Login = (request, rp) => {
   }
 
   // Re-casting the body params to strings
-  rq.body.username = `${rq.body.username}`;
-  rq.body.password = `${rq.body.password}`;
+  const username = `${rq.body.username}`;
+  const password = `${rq.body.password}`;
 
   // Authenticating the login info
-  return _Account.Model.Authenticate(rq.body.username, rq.body.password, (error, doc) => {
+  return _Account.Model.Authenticate(username, password, (error, doc) => {
     // IF an error occured with the authentication, say so
-    if (error || !doc) {
+    if (error !== null || doc === null) {
       return rp.status(401).json({ error: 'Wrong login information' });
     }
 
     // Setting the current session account to the user
-    rq.session.account = _Account.Model.ToAPI(doc);
+    rq.session.account = _Account.Model.FormatForSession(doc);
 
     // Responding w/ successful login notification
-    console.log(`- Account [${doc.username}] logged in at ${models.CurrentTime()}`);
+    console.log(`- Account [${username}] logged in at ${models.CurrentTime()}`);
     return rp.json({
       message: 'Login successful!',
       redirect: '/catalogue',
@@ -97,7 +97,7 @@ const Logout = (request, rp) => {
   const rq = request;
 
   // Destroying the session + redirecting to the login screen
-  console.log(`- Account [${rq.session.username}] logged out at ${models.CurrentTime()}`);
+  console.log(`- Account [${rq.session.account.username}] logged out at ${models.CurrentTime()}`);
   rq.session.destroy();
   rp.redirect('/login');
 };

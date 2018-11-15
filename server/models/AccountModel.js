@@ -7,6 +7,7 @@ mongoose.Promise = global.Promise;
 
 // Defining the model object + constant variables
 let AccountModel = {};
+const encryptMethod = 'RSA-SHA512';
 const iterations = 40000;
 const saltLength = 128;
 const keyLength = 128;
@@ -45,7 +46,7 @@ AccountSchema.statics.FormatForSession = doc => ({
 AccountSchema.statics.GenerateHash = (pass, callback) => {
   const salt = crypto.randomBytes(saltLength);
 
-  crypto.pbkdf2(pass, salt, iterations, keyLength, 'RSA-SHA512', (err, hash) => {
+  crypto.pbkdf2(pass, salt, iterations, keyLength, encryptMethod, (err, hash) => {
     callback(salt, hash.toString('hex'));
   });
 };
@@ -76,7 +77,6 @@ const SelectString = (params) => {
 
 // Authenticate()
 AccountSchema.statics.Authenticate = (user, pass, callback) => {
-  //
   const v = AccountModel.findOne({ username: user }, SelectString(), (err1, doc) => {
     if (err1) {
       console.log(err1);
@@ -87,9 +87,12 @@ AccountSchema.statics.Authenticate = (user, pass, callback) => {
       return callback(null, null);
     }
 
-    return crypto.pbkdf(pass, doc.salt, iterations, keyLength, (err2, hash) => {
-      if (hash !== doc.password) {
-        callback(null, null);
+    return crypto.pbkdf2(pass, doc.salt, iterations, keyLength, encryptMethod, (err2, hash) => {
+      if (err2) {
+        return callback(err2, null);
+      }
+      if (hash.toString('hex') !== doc.password) {
+        return callback(null, null);
       }
       return callback(null, doc);
     });
