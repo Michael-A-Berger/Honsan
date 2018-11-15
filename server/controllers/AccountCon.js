@@ -1,0 +1,122 @@
+// Getting the server models
+const models = require('../models');
+
+// Setting the Model constants
+const _Account = models.Account;
+
+// Signup()
+const Signup = (request, rp) => {
+  // Creating a copy of the Request object to allow session assignment
+  const rq = request;
+
+  // IF there appropriate params don't exist, say so
+  if (!rq.body.username || !rq.body.password || !rq.body.password2) {
+    return rp.status(400).json({ error: 'All fields are required!' });
+  }
+
+  // Re-casting the body params to strings
+  rq.body.username = `${rq.body.username}`;
+  rq.body.password = `${rq.body.password}`;
+  rq.body.password2 = `${rq.body.password2}`;
+
+  // IF the passwords don't match, say so
+  if (rq.body.password !== rq.body.password2) {
+    return rp.status(400).json({ error: 'Passwords must match!' });
+  }
+
+  // Generating the hashed password
+  return _Account.Model.GenerateHash(rq.body.password, (returnSalt, hash) => {
+    const accountData = {
+      username: rq.body.username,
+      salt: returnSalt,
+      password: hash,
+    };
+
+    // Creating the new account + Saving it
+    const newAccount = new _Account.Model(accountData);
+    const accountPromise = newAccount.save();
+
+    // Handling the saving + errors
+    accountPromise.then(() => {
+      console.log(`- Account [${accountData.username}] created at ${models.CurrentTime()}`);
+      console.log(`- Account [${accountData.username}] logged in at ${models.CurrentTime()}`);
+      rq.session.account = _Account.Model.FormatForSession(newAccount);
+      return rp.json({
+        message: 'You successfully created the account!',
+        redirect: '/catalogue',
+      });
+    });
+    return accountPromise.catch((error) => {
+      console.log(error);
+
+      if (error.code === 11000) {
+        return rp.status(400).json({ error: 'The chosen username is already in use' });
+      }
+
+      return models.UnexpectedServerError(rq, rp);
+    });
+  });
+};
+
+// Login()
+const Login = (request, rp) => {
+  // Creating a copy of the Request object to allow session assignment
+  const rq = request;
+
+  // IF there appropriate params don't exist, say so
+  if (!rq.body.username || !rq.body.password) {
+    return rp.status(400).json({ error: 'All fields are required!' });
+  }
+
+  // Re-casting the body params to strings
+  rq.body.username = `${rq.body.username}`;
+  rq.body.password = `${rq.body.password}`;
+
+  // Authenticating the login info
+  return _Account.Model.Authenticate(rq.body.username, rq.body.password, (error, doc) => {
+    // IF an error occured with the authentication, say so
+    if (error || !doc) {
+      return rp.status(401).json({ error: 'Wrong login information' });
+    }
+
+    // Setting the current session account to the user
+    rq.session.account = _Account.Model.ToAPI(doc);
+
+    // Responding w/ successful login notification
+    console.log(`- Account [${doc.username}] logged in at ${models.CurrentTime()}`);
+    return rp.json({
+      message: 'Login successful!',
+      redirect: '/catalogue',
+    });
+  });
+};
+
+// Logout()
+const Logout = (request, rp) => {
+  // Creating a copy of the Request object for session destruction
+  const rq = request;
+
+  // Destroying the session + redirecting to the login screen
+  console.log(`- Account [${rq.session.username}] logged out at ${models.CurrentTime()}`);
+  rq.session.destroy();
+  rp.redirect('/login');
+};
+
+// GetLoginPage()
+const GetLoginPage = (rq, rp) => {
+  rp.render('login', { csrfToken: rq.csrfToken() });
+};
+
+// GetSignupPage()
+const GetSignupPage = (rq, rp) => {
+  rp.render('signup', { csrfToken: rq.csrfToken() });
+};
+
+// Defining the exports
+module.exports = {
+  Signup,
+  Login,
+  Logout,
+  GetLoginPage,
+  GetSignupPage,
+};

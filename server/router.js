@@ -12,11 +12,16 @@ const router = (app) => {
   app.get('/add_member', controllers.Member.GetAddMemberPage);
   app.get('/get_catalogue', controllers.Entry.GetCatalogue);
   app.get('/member_list', controllers.Member.GetMemberListPage);
+  app.get('/login', controllers.Account.GetLoginPage);
+  app.get('/signup', controllers.Account.GetSignupPage);
+  app.get('/logout', controllers.Account.Logout);
 
   // POST
   app.post('/make_entry', controllers.Entry.MakeEntry);
   app.post('/make_copy', controllers.Copy.MakeCopy);
   app.post('/make_member', controllers.Member.MakeMember);
+  app.post('/confirm_login', controllers.Account.Login);
+  app.post('/confirm_signup', controllers.Account.Signup);
 };
 
 // Defining the exports
