@@ -8,49 +8,53 @@
   <script src="/assets/add_entry.js" type="text/javascript"></script>
 </head>
 <body>
+  <img src='/assets/media/banner.png' alt='A Banner Ad (eventually)' id='banner-ad'>
   <ul id='navbar'>
     <li><a href='/' class='navbar-selected'>New Entry</a></li>
     <li><a href='/add_member'>Add Member</a></li>
     <li><a href='/catalogue'>Catalogue</a></li>
     <li><a href='/member_list'>Member List</a></li>
+    <li><a href='/logout'>Log Out</a></li>
   </ul>
-  <form id='search-form'
-        name='search-form'
-        class='search-form'>
-    <h3>Search </h3>
-    <select name='searchType'>
-      <option value='anime'>Anime</option>
-      <option value='manga'>Manga</option>
-    </select>
-    <h3> :</h3>
-    <input id='search-query' type='text' name='query' placeholder='search term...' />
-    <input id='search-submit' type='submit' value='Search Kitsu' />
-  </form>
-  <div id="search-results"></div>
-  <form id='entry-form'
-          name='entry-form'
-          class='entry-form'>
-    <label for='engName'>English Name:</label>
-    <input id='entry-eng-name' type='text' name='engName' placeholder='eng. name' />
-    <label for='japName'>Japanese Name:</label>
-    <input id='entry-jap-name' type='text' name='japName' placeholder='jap. name' />
-    <label for='trnName'>Transliteral Name:</label>
-    <input id='entry-trn-name' type='text' name='trnName' placeholder='trn. name' />
-    <h3>Description:</h3>
-    <textarea id='entry-description' form='entry-form' rows='6' cols='80' name='description' placeholder='description'></textarea>
-    <label for='genres'>Genres:</label>
-    <input id='entry-genres' type='text' name='genres' placeholder='ex; action, adventure' />
-    <label for='publisher'>Publisher:</label>
-    <input id='entry-publisher' type='text' name='publisher' placeholder='publisher' />
-    <label for='mediaType'>Media Type:</label>
-    <select name='mediaType'>
-      <option value='anime'>Anime</option>
-      <option value='manga'>Manga</option>
-      <option value='other'>Other</option>
-    </select>
-    <input type='hidden' name='_csrf' value='{{csrfToken}}'>
-    <input class='entry-submit' type='submit' value='Add to Catalogue'/>
-  </form>
-  <div id='entry-results'></div>
+  <div id='content'>
+    <form id='search-form'
+          name='search-form'
+          class='search-form'>
+      <h3>Search </h3>
+      <select name='searchType'>
+        <option value='anime'>Anime</option>
+        <option value='manga'>Manga</option>
+      </select>
+      <h3> :</h3>
+      <input id='search-query' type='text' name='query' placeholder='search term...' />
+      <input id='search-submit' type='submit' value='Search Kitsu' />
+    </form>
+    <div id="search-results"></div>
+    <form id='entry-form'
+            name='entry-form'
+            class='entry-form'>
+      <label for='engName'>English Name:</label>
+      <input id='entry-eng-name' type='text' name='engName' placeholder='eng. name' />
+      <label for='japName'>Japanese Name:</label>
+      <input id='entry-jap-name' type='text' name='japName' placeholder='jap. name' />
+      <label for='trnName'>Transliteral Name:</label>
+      <input id='entry-trn-name' type='text' name='trnName' placeholder='trn. name' />
+      <h3>Description:</h3>
+      <textarea id='entry-description' form='entry-form' rows='6' cols='80' name='description' placeholder='description'></textarea>
+      <label for='genres'>Genres:</label>
+      <input id='entry-genres' type='text' name='genres' placeholder='ex; action, adventure' />
+      <label for='publisher'>Publisher:</label>
+      <input id='entry-publisher' type='text' name='publisher' placeholder='publisher' />
+      <label for='mediaType'>Media Type:</label>
+      <select name='mediaType'>
+        <option value='anime'>Anime</option>
+        <option value='manga'>Manga</option>
+        <option value='other'>Other</option>
+      </select>
+      <input type='hidden' name='_csrf' value='{{csrfToken}}'>
+      <input class='entry-submit' type='submit' value='Add to Catalogue'/>
+    </form>
+    <div id='entry-results'></div>
+  </div>
 </body>
 </html>

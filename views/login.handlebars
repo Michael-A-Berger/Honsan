@@ -8,22 +8,25 @@
   <script src="/assets/login.js" type="text/javascript"></script>
 </head>
 <body>
+  <img src='/assets/media/banner.png' alt='A Banner Ad (eventually)' id='banner-ad'>
   <ul id='navbar'>
     <li><a href='/login' class='navbar-selected'>Log In</a></li>
     <li><a href='/signup'>Sign Up</a></li>
   </ul>
-  <div id='login-container'>
-    <form id='login-form'
-          name='login-form'
-          class='login-form'>
-      <label for='username'>Username:</label>
-      <input class='login-username' type='text' name='username' placeholder='username' />
-      <label for='password'>Password:</label>
-      <input class='login-password' type='password' name='password' placeholder='password' />
-      <input type='hidden' name='_csrf' value='{{csrfToken}}'>
-      <input class='login-submit' type='submit' value='Log In'/>
-    </form>
+  <div id='content'>
+    <div id='login-container'>
+      <form id='login-form'
+            name='login-form'
+            class='login-form'>
+        <label for='username'>Username:</label>
+        <input class='login-username' type='text' name='username' placeholder='username' />
+        <label for='password'>Password:</label>
+        <input class='login-password' type='password' name='password' placeholder='password' />
+        <input type='hidden' name='_csrf' value='{{csrfToken}}'>
+        <input class='login-submit' type='submit' value='Log In'/>
+      </form>
+    </div>
+    <div id='login-results'></div>
   </div>
-  <div id='login-results'></div>
 </body>
 </html>

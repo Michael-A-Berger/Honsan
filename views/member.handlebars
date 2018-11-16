@@ -13,72 +13,76 @@
   <script src="/assets/signin.js" type="text/javascript"></script>
 </head>
 <body>
+  <img src='/assets/media/banner.png' alt='A Banner Ad (eventually)' id='banner-ad'>
   <ul id='navbar'>
     <li><a href='/'>New Entry</a></li>
     <li><a href='/add_member'>Add Member</a></li>
     <li><a href='/catalogue'>Catalogue</a></li>
     <li><a href='/member_list'>Member List</a></li>
+    <li><a href='/logout'>Log Out</a></li>
   </ul>
-  <div id='member-container'>
-    {{#if member}}
-      <div class='member-entry'>
-        <h1>{{member.first_name}} {{member.last_name}}</h1>
-        <p><b>Email:</b> {{member.email}}</p>
-        <p><b>Cards:</b> 
-          {{#each member.cards}}
-            <span class='member-card'>{{this}}</span>{{#if @last}}{{else}}, {{/if}}
-          {{else}}
-            <span>No cards assigned (somehow...)</span>
-          {{/each}}
-        </p>
-        <div class='borrowed-container'>
-          {{#each member.borrowed}}
-            <div class='member-borrowed'>
-              <p><a href='/entry?id={{this.entry_id}}'>{{this.entry_name}}</a></p>
-              <p>{{this.name}}</p>
-              <p>{{this.nickname}}</p>
-              <p>{{this.quality}}</p>
-              <p>Due {{this.due_date}}</p>
-              {{#if this.due_date}}
-                <button type='button'
-                        onclick='Renew("{{this.copy_id}}", "{{../csrfToken}}")'>Renewal</button>
-                <button type='button'
-                        onclick='SignIn("{{this.copy_id}}", "{{../csrfToken}}")'>Sign In</button>
-              {{/if}}
-            </div>
-          {{else}}
-            <p>No borrowed items.</p>
-          {{/each}}
+  <div id='content'>
+    <div id='member-container'>
+      {{#if member}}
+        <div class='member-entry'>
+          <h1>{{member.first_name}} {{member.last_name}}</h1>
+          <p><b>Email:</b> {{member.email}}</p>
+          <p><b>Cards:</b> 
+            {{#each member.cards}}
+              <span class='member-card'>{{this}}</span>{{#if @last}}{{else}}, {{/if}}
+            {{else}}
+              <span>No cards assigned (somehow...)</span>
+            {{/each}}
+          </p>
+          <div class='borrowed-container'>
+            {{#each member.borrowed}}
+              <div class='member-borrowed'>
+                <p><a href='/entry?id={{this.entry_id}}'>{{this.entry_name}}</a></p>
+                <p>{{this.name}}</p>
+                <p>{{this.nickname}}</p>
+                <p>{{this.quality}}</p>
+                <p>Due {{this.due_date}}</p>
+                {{#if this.due_date}}
+                  <button type='button'
+                          onclick='Renew("{{this.copy_id}}", "{{../csrfToken}}")'>Renewal</button>
+                  <button type='button'
+                          onclick='SignIn("{{this.copy_id}}", "{{../csrfToken}}")'>Sign In</button>
+                {{/if}}
+              </div>
+            {{else}}
+              <p>No borrowed items.</p>
+            {{/each}}
+          </div>
+          <div id='signin-results'></div>
+          <div id='signout-nickname-container'>
+            <h2>Quick Sign Out:</h2>
+            <form id='signout-nickname-form'
+                  name='signout-nickname-form'
+                  class='signout-nickname-form'>
+              <label for='nickname'>Copy Nickname:</label>
+              <input class='signout-nickname' type='text' name='nickname' placeholder='nickname' />
+              <input class='signout-nickname-member' type='hidden' name='memberId' value='{{member.member_id}}' />
+              <input type='hidden' name='_csrf' value='{{csrfToken}}' />
+              <input class='signout-nickname-submit' type='submit' value='Sign Out Copy' />
+            </form>
+            <div id='signout-nickname-results'></div>
+          </div>
+          <div id='signout-container'>
+            <h2>Sign Out by Search:</h2>
+            <form id='signout-search-form'
+                  name='signout-search-form'
+                  class='signout-search-form'>
+              <input class='signout-search' type='text' name='search' placeholder='search term' />
+              <input type='hidden' name='_csrf' value='{{csrfToken}}' />
+              <input class='signout-search-submit' type='submit' value='Search Catalogue' />
+            </form>
+            <div id='signout-search-results'></div>
+          </div>
         </div>
-        <div id='signin-results'></div>
-        <div id='signout-nickname-container'>
-          <h2>Quick Sign Out:</h2>
-          <form id='signout-nickname-form'
-                name='signout-nickname-form'
-                class='signout-nickname-form'>
-            <label for='nickname'>Copy Nickname:</label>
-            <input class='signout-nickname' type='text' name='nickname' placeholder='nickname' />
-            <input class='signout-nickname-member' type='hidden' name='memberId' value='{{member.member_id}}' />
-            <input type='hidden' name='_csrf' value='{{csrfToken}}' />
-            <input class='signout-nickname-submit' type='submit' value='Sign Out Copy' />
-          </form>
-          <div id='signout-nickname-results'></div>
-        </div>
-        <div id='signout-container'>
-          <h2>Sign Out by Search:</h2>
-          <form id='signout-search-form'
-                name='signout-search-form'
-                class='signout-search-form'>
-            <input class='signout-search' type='text' name='search' placeholder='search term' />
-            <input type='hidden' name='_csrf' value='{{csrfToken}}' />
-            <input class='signout-search-submit' type='submit' value='Search Catalogue' />
-          </form>
-          <div id='signout-search-results'></div>
-        </div>
-      </div>
-    {{else}}
-      <h2>Member ID is not valid.</h2>
-    {{/if}}
+      {{else}}
+        <h2>Member ID is not valid.</h2>
+      {{/if}}
+    </div>
   </div>
 </body>
 </html>

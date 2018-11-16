@@ -8,26 +8,30 @@
   <script src="/assets/add_member.js" type="text/javascript"></script>
 </head>
 <body>
+  <img src='/assets/media/banner.png' alt='A Banner Ad (eventually)' id='banner-ad'>
   <ul id='navbar'>
     <li><a href='/'>New Entry</a></li>
     <li><a href='/add_member' class='navbar-selected'>Add Member</a></li>
     <li><a href='/catalogue'>Catalogue</a></li>
     <li><a href='/member_list'>Member List</a></li>
+    <li><a href='/logout'>Log Out</a></li>
   </ul>
-  <form id='member-form'
-          name='member-form'
-          class='member-form'>
-    <label for='firstName'>First Name:</label>
-    <input class='member-first-name' type='text' name='firstName' placeholder='first name' />
-    <label for='lastName'>Last Name:</label>
-    <input class='member-last-name' type='text' name='lastName' placeholder='last name' />
-    <label for='email'>Email:</label>
-    <input class='member-email' type='text' name='email' placeholder='email address' />
-    <label for='cards'>Card:</label>
-    <input class='member-card' type='text' name='cards' placeholder='card id' />
-    <input type='hidden' name='_csrf' value='{{csrfToken}}'>
-    <input class='member-submit' type='submit' value='Add Member'/>
-  </form>
-  <div id='member-results'></div>
+  <div id='content'>
+    <form id='member-form'
+            name='member-form'
+            class='member-form'>
+      <label for='firstName'>First Name:</label>
+      <input class='member-first-name' type='text' name='firstName' placeholder='first name' />
+      <label for='lastName'>Last Name:</label>
+      <input class='member-last-name' type='text' name='lastName' placeholder='last name' />
+      <label for='email'>Email:</label>
+      <input class='member-email' type='text' name='email' placeholder='email address' />
+      <label for='cards'>Card:</label>
+      <input class='member-card' type='text' name='cards' placeholder='card id' />
+      <input type='hidden' name='_csrf' value='{{csrfToken}}'>
+      <input class='member-submit' type='submit' value='Add Member'/>
+    </form>
+    <div id='member-results'></div>
+  </div>
 </body>
 </html>
