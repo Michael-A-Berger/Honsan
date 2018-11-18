@@ -52,8 +52,8 @@ app.use(session({
     pass: redisPASS,
   }),
   secret: 'Tama Neko',
-  resave: false,
-  saveUninitialized: false,
+  resave: true,
+  saveUninitialized: true,
   cookie: {
     httpOnly: true,
   },
