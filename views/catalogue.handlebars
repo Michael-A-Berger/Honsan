@@ -10,25 +10,27 @@
   <ul id='navbar'>
     <li><a href='/'>New Entry</a></li>
     <li><a href='/add_member'>Add Member</a></li>
-    <li><a href='/catalogue' class='navbar-selected'>Catalogue</a></li>
+    <li><a href='/catalogue' class='navbar-selected'>Catalog</a></li>
     <li><a href='/member_list'>Member List</a></li>
     <li><a href='/logout'>Log Out</a></li>
   </ul>
   <div id='content'>
     <div id='catalogue-container'>
-      {{#each entries}}
-        <div class='catalogue-entry'>
-          <h2><a href='/entry?id={{this.entry_id}}'>{{this.en_name}}</a></h2>
-          <p><b>Jap. Name:</b> {{this.jp_name}}</p>
-          <p><b>Trn. Name:</b> {{this.tr_name}}</p>
-          <p><b>Genres:</b> {{this.genres}}</p>
-          <p><b>Description:</b> {{this.description}}</p>
-          <p><b>Publisher:</b> {{this.publisher}}</p>
-          <p><b>Media Type:</b> {{this.media_type}}</p>
-        </div>
+      {{#if entries}}
+        {{#each entries}}
+          <div class='catalogue-entry'>
+            <h2><a href='/entry?id={{this.entry_id}}'>{{this.en_name}}</a></h2>
+            <p><b>Jap. Name:</b> {{this.jp_name}}</p>
+            <p><b>Trn. Name:</b> {{this.tr_name}}</p>
+            <p><b>Genres:</b> {{this.genres}}</p>
+            <p><b>Description:</b> {{this.description}}</p>
+            <p><b>Publisher:</b> {{this.publisher}}</p>
+            <p><b>Media Type:</b> {{this.media_type}}</p>
+          </div>
+        {{/each}}
       {{else}}
         <h2>No entries.</h2>
-      {{/each}}
+      {{/if}}
     </div>
   </div>
 </body>

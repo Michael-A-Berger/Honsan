@@ -17,7 +17,7 @@
   <ul id='navbar'>
     <li><a href='/'>New Entry</a></li>
     <li><a href='/add_member'>Add Member</a></li>
-    <li><a href='/catalogue'>Catalogue</a></li>
+    <li><a href='/catalogue'>Catalog</a></li>
     <li><a href='/member_list'>Member List</a></li>
     <li><a href='/logout'>Log Out</a></li>
   </ul>
@@ -30,37 +30,48 @@
           <p><b>Cards:</b> 
             {{#each member.cards}}
               <span class='member-card'>{{this}}</span>{{#if @last}}{{else}}, {{/if}}
-            {{else}}
-              <span>No cards assigned (somehow...)</span>
             {{/each}}
           </p>
           <div class='borrowed-container'>
-            {{#each member.borrowed}}
-              <div class='member-borrowed'>
-                <p><a href='/entry?id={{this.entry_id}}'>{{this.entry_name}}</a></p>
-                <p>{{this.name}}</p>
-                <p>{{this.nickname}}</p>
-                <p>{{this.quality}}</p>
-                <p>Due {{this.due_date}}</p>
-                {{#if this.due_date}}
-                  <button type='button'
-                          onclick='Renew("{{this.copy_id}}", "{{../csrfToken}}")'>Renewal</button>
-                  <button type='button'
-                          onclick='SignIn("{{this.copy_id}}", "{{../csrfToken}}")'>Sign In</button>
-                {{/if}}
-              </div>
-            {{else}}
-              <p>No borrowed items.</p>
-            {{/each}}
+            <h2>Borrowed Items:</h2>
+            <table>
+              <tr>
+                <th>Entry</th>
+                <th>Copy</th>
+                <th>Nickname</th>
+                <th>Quality</th>
+                <th>Due Date</th>
+              </tr>
+            {{#if member.borrowed}}
+                {{#each member.borrowed}}
+                <tr>
+                  <td><a href='/entry?id={{this.entry_id}}'>{{this.entry_name}}</a></td>
+                  <td>{{this.name}}</td>
+                  <td>{{this.nickname}}</td>
+                  <td>{{this.quality}}</td>
+                  <td>Due {{this.due_date_str}}</td>
+                  {{#if this.due_date}}
+                    <td><button type='button'
+                            onclick='Renew("{{this.copy_id}}", "{{../csrfToken}}")'>Renewal</button></td>
+                    <td><button type='button'
+                            onclick='SignIn("{{this.copy_id}}", "{{../csrfToken}}")'>Sign In</button></td>
+                  {{/if}}
+                </tr>
+                {{/each}}
+              {{else}}
+                <tr><td colspan='5'>No borrowed items.</td></tr>
+              {{/if}}
+            </table>
           </div>
           <div id='signin-results'></div>
           <div id='signout-nickname-container'>
-            <h2>Quick Sign Out:</h2>
+            <h2>Sign Out:</h2>
             <form id='signout-nickname-form'
                   name='signout-nickname-form'
                   class='signout-nickname-form'>
-              <label for='nickname'>Copy Nickname:</label>
-              <input class='signout-nickname' type='text' name='nickname' placeholder='nickname' />
+              <label for='nickname'>Copy Nickname:
+                <input class='signout-nickname' type='text' name='nickname' placeholder='nickname' />
+              </label>
               <input class='signout-nickname-member' type='hidden' name='memberId' value='{{member.member_id}}' />
               <input type='hidden' name='_csrf' value='{{csrfToken}}' />
               <input class='signout-nickname-submit' type='submit' value='Sign Out Copy' />

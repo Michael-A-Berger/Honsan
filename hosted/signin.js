@@ -8,7 +8,8 @@ var SigninResponse = function SigninResponse(data) {
   if (data.error) {
     signinResults.innerHTML = '<p><b>ERROR:</b> ' + data.error + '</p>';
   } else {
-    signinResults.innerHTML = '<p>' + data.message + '</p>';
+    // signinResults.innerHTML = `<p>${data.message}</p>`;
+    location.reload();
   }
 };
 

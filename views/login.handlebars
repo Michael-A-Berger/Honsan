@@ -18,10 +18,12 @@
       <form id='login-form'
             name='login-form'
             class='login-form'>
-        <label for='username'>Username:</label>
-        <input class='login-username' type='text' name='username' placeholder='username' />
-        <label for='password'>Password:</label>
-        <input class='login-password' type='password' name='password' placeholder='password' />
+        <label for='username'>Username:
+          <input class='login-username' type='text' name='username' placeholder='username' />
+        </label>
+        <label for='password'>Password:
+          <input class='login-password' type='password' name='password' placeholder='password' />
+        </label>
         <input type='hidden' name='_csrf' value='{{csrfToken}}'>
         <input class='login-submit' type='submit' value='Log In'/>
       </form>

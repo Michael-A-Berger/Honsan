@@ -16,14 +16,14 @@
   <ul id='navbar'>
     <li><a href='/'>New Entry</a></li>
     <li><a href='/add_member'>Add Member</a></li>
-    <li><a href='/catalogue'>Catalogue</a></li>
+    <li><a href='/catalogue'>Catalog</a></li>
     <li><a href='/member_list'>Member List</a></li>
     <li><a href='/logout'>Log Out</a></li>
   </ul>
   <div id='content'>
-    <div id='catalogue-container'>
+    <div id='entry-container'>
       {{#if entry}}
-        <div class='catalogue-entry'>
+        <div class='entry'>
           <h1>{{entry.en_name}}</h1>
           <p><b>Jap. Name:</b> {{entry.jp_name}}</p>
           <p><b>Trn. Name:</b> {{entry.tr_name}}</p>
@@ -32,22 +32,39 @@
           <p><b>Publisher:</b> {{entry.publisher}}</p>
           <p><b>Media Type:</b> {{entry.media_type}}</p>
           <div class='copies-contrainer'>
-            {{#each entry.copies}}
-              <div class='entry-copy'>
-                <p>{{this.name}}</p>
-                <p>{{this.nickname}}</p>
-                <p>{{this.quality}}</p>
-                <p>{{this.description}}</p>
-                {{#if this.borrower}}
-                  <p><a href='/member?id={{this.borrower}}'>Signed Out</a></p>
-                {{/if}}
-                {{#if this.due_date}}
-                  <p>{{this.due_date}}</p>
-                {{/if}}
-              </div>
-            {{else}}
-              <div>No copies created yet</div>
-            {{/each}}
+            <h2><b>Copies:</b></h2>
+            <table>
+              <tr>
+                <th>Name</th>
+                <th>Nickname</th>
+                <th>Quality</th>
+                <th>Description</th>
+                <th>Signed Out?</th>
+                <th>Due Date</th>
+              </tr>
+              {{#if entry.copies}}
+                {{#each entry.copies}}
+                  <tr>
+                    <td>{{this.name}}</td>
+                    <td>{{this.nickname}}</td>
+                    <td>{{this.quality}}</td>
+                    <td>{{this.description}}</td>
+                    {{#if this.borrower}}
+                      <td><a href='/member?id={{this.borrower}}'>Yes</a></td>
+                    {{else}}
+                      <td>No</td>
+                    {{/if}}
+                    {{#if this.due_date_str}}
+                      <td>{{this.due_date_str}}</td>
+                    {{else}}
+                      <td></td>
+                    {{/if}}
+                  </tr>
+                {{/each}}
+              {{else}}
+                <tr><td colspan='6'>No copies created yet</td></tr>
+              {{/if}}
+            </table>
           </div>
           <div id='add-copies-container'>
             <h2>Add Copy:</h2>
@@ -55,18 +72,21 @@
                       name='copy-form'
                       class='copy-form'>
                 <input class='copy-entry-id' type='hidden' name='entryId' value='{{entry.entry_id}}' />
-                <label for='name'>Name:</label>
-                <input class='copy-name' type='text' name='name' placeholder='name' />
-                <label for='nickname'>Nickname:</label>
-                <input class='copy-nickname' type='text' name='nickname' placeholder='nickname' />
-                <label for='quality'>Quality:</label>
-                <select name='quality'>
-                  <option value='new'>New</option>
-                  <option value='great'>Great</option>
-                  <option value='decent' selected>Decent</option>
-                  <option value='rough'>Rough</option>
-                  <option value='poor'>Poor</option>
-                </select>
+                <label for='name'>Name:
+                  <input class='copy-name' type='text' name='name' placeholder='name' />
+                </label>
+                <label for='nickname'>Nickname:
+                  <input class='copy-nickname' type='text' name='nickname' placeholder='nickname' />
+                </label>
+                <label for='quality'>Quality:
+                  <select name='quality'>
+                    <option value='new'>New</option>
+                    <option value='great'>Great</option>
+                    <option value='decent' selected>Decent</option>
+                    <option value='rough'>Rough</option>
+                    <option value='poor'>Poor</option>
+                  </select>
+                </label>
                 <h3>Description:</h3>
                 <textarea class='copy-description' form='copy-form' name='description' placeholder='description'></textarea>
                 <input type='hidden' name='_csrf' value='{{csrfToken}}'>

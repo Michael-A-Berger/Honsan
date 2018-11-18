@@ -30,7 +30,7 @@ const EntrySchema = new mongoose.Schema({
     trim: true,
   },
   catalogue_date: {
-    type: Date,
+    type: String,
     default: Date.now,
   },
   publisher: {

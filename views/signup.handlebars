@@ -18,12 +18,15 @@
       <form id='signup-form'
             name='signup-form'
             class='signup-form'>
-        <label for='username'>Username:</label>
-        <input class='signup-username' type='text' name='username' placeholder='username' />
-        <label for='password'>Password:</label>
-        <input class='signup-password' type='password' name='password' placeholder='password' />
-        <label for='password2'>Retype Password:</label>
-        <input class='signup-password2' type='password' name='password2' placeholder='password (again)' />
+        <label for='username'>Username:
+          <input class='signup-username' type='text' name='username' placeholder='username' />
+        </label>
+        <label for='password'>Password:
+          <input class='signup-password' type='password' name='password' placeholder='password' />
+        </label>
+        <label for='password2'>Retype Password:
+          <input class='signup-password2' type='password' name='password2' placeholder='password (again)' />
+        </label>
         <input type='hidden' name='_csrf' value='{{csrfToken}}'>
         <input class='signup-submit' type='submit' value='Sign Up'/>
       </form>

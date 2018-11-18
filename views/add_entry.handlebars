@@ -12,11 +12,12 @@
   <ul id='navbar'>
     <li><a href='/' class='navbar-selected'>New Entry</a></li>
     <li><a href='/add_member'>Add Member</a></li>
-    <li><a href='/catalogue'>Catalogue</a></li>
+    <li><a href='/catalogue'>Catalog</a></li>
     <li><a href='/member_list'>Member List</a></li>
     <li><a href='/logout'>Log Out</a></li>
   </ul>
   <div id='content'>
+    <h1>Add Entry</h1>
     <form id='search-form'
           name='search-form'
           class='search-form'>
@@ -30,31 +31,40 @@
       <input id='search-submit' type='submit' value='Search Kitsu' />
     </form>
     <div id="search-results"></div>
-    <form id='entry-form'
-            name='entry-form'
-            class='entry-form'>
-      <label for='engName'>English Name:</label>
-      <input id='entry-eng-name' type='text' name='engName' placeholder='eng. name' />
-      <label for='japName'>Japanese Name:</label>
-      <input id='entry-jap-name' type='text' name='japName' placeholder='jap. name' />
-      <label for='trnName'>Transliteral Name:</label>
-      <input id='entry-trn-name' type='text' name='trnName' placeholder='trn. name' />
-      <h3>Description:</h3>
-      <textarea id='entry-description' form='entry-form' rows='6' cols='80' name='description' placeholder='description'></textarea>
-      <label for='genres'>Genres:</label>
-      <input id='entry-genres' type='text' name='genres' placeholder='ex; action, adventure' />
-      <label for='publisher'>Publisher:</label>
-      <input id='entry-publisher' type='text' name='publisher' placeholder='publisher' />
-      <label for='mediaType'>Media Type:</label>
-      <select name='mediaType'>
-        <option value='anime'>Anime</option>
-        <option value='manga'>Manga</option>
-        <option value='other'>Other</option>
-      </select>
-      <input type='hidden' name='_csrf' value='{{csrfToken}}'>
-      <input class='entry-submit' type='submit' value='Add to Catalogue'/>
-    </form>
-    <div id='entry-results'></div>
+    <div id='add-entry-container'>
+      <form id='entry-form'
+              name='entry-form'
+              class='entry-form'>
+        <label for='engName'>English Name: <span class='form-required'>*</span>
+          <input id='entry-eng-name' type='text' name='engName' placeholder='eng. name' />
+        </label>
+        <label for='japName'>Japanese Name:
+          <input id='entry-jap-name' type='text' name='japName' placeholder='jap. name' />
+        </label>
+        <label for='trnName'>Transliteral Name:
+          <input id='entry-trn-name' type='text' name='trnName' placeholder='trn. name' />
+        </label>
+        <h3>Description:</h3>
+        <textarea id='entry-description' form='entry-form' rows='6' cols='45' name='description' placeholder='description'></textarea>
+        <label for='genres'>Genres:
+          <input id='entry-genres' type='text' name='genres' placeholder='ex; action, adventure' />
+        </label>
+        <label for='publisher'>Publisher:
+          <input id='entry-publisher' type='text' name='publisher' placeholder='publisher' />
+        </label>
+        <label for='mediaType'>Media Type:
+          <select name='mediaType'>
+            <option value='anime'>Anime</option>
+            <option value='manga'>Manga</option>
+            <option value='other'>Other</option>
+          </select>
+        </label>
+        <input type='hidden' name='_csrf' value='{{csrfToken}}'>
+        <label class='form-required'>* Required</label>
+        <input class='entry-submit' type='submit' value='Add to Catalogue'/>
+      </form>
+      <div id='entry-results'></div>
+    </div>
   </div>
 </body>
 </html>

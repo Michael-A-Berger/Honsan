@@ -90,6 +90,11 @@ const GetMemberPage = (rq, rp) => {
       // IF books are borrowed, add them to the returned member
       if (docBorrowed.length > 0) {
         currentMember.borrowed = docBorrowed;
+        let dueDate = '';
+        for (let num = 0; num < currentMember.borrowed.length; num++) {
+          dueDate = models.DayFromDate(currentMember.borrowed[num].due_date);
+          currentMember.borrowed[num].due_date_str = dueDate;
+        }
       }
 
       // Sending the Member page

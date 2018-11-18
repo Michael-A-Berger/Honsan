@@ -7,7 +7,8 @@ const SignoutNicknameResponse = (data) => {
   if (data.error) {
     signoutNicknameResults.innerHTML = `<p><b>ERROR:</b> ${data.error}</p>`;
   } else {
-    signoutNicknameResults.innerHTML = `<p>Sign out was successful!</p>`;
+    // signoutNicknameResults.innerHTML = `<p>Sign out was successful!</p>`;
+    location.reload();
   }
 };
 

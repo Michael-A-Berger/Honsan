@@ -7,7 +7,7 @@ const CopyResponse = (data) => {
   if (data.error) {
     copyResults.innerHTML = `<p><b>ERROR:</b> ${data.error}</p>`;
   } else {
-    copyResults.innerHTML = `<p>Copy added!</p>`;
+    location.reload();
   }
 };
 

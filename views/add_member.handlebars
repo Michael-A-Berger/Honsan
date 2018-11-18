@@ -12,26 +12,34 @@
   <ul id='navbar'>
     <li><a href='/'>New Entry</a></li>
     <li><a href='/add_member' class='navbar-selected'>Add Member</a></li>
-    <li><a href='/catalogue'>Catalogue</a></li>
+    <li><a href='/catalogue'>Catalog</a></li>
     <li><a href='/member_list'>Member List</a></li>
     <li><a href='/logout'>Log Out</a></li>
   </ul>
   <div id='content'>
-    <form id='member-form'
-            name='member-form'
-            class='member-form'>
-      <label for='firstName'>First Name:</label>
-      <input class='member-first-name' type='text' name='firstName' placeholder='first name' />
-      <label for='lastName'>Last Name:</label>
-      <input class='member-last-name' type='text' name='lastName' placeholder='last name' />
-      <label for='email'>Email:</label>
-      <input class='member-email' type='text' name='email' placeholder='email address' />
-      <label for='cards'>Card:</label>
-      <input class='member-card' type='text' name='cards' placeholder='card id' />
-      <input type='hidden' name='_csrf' value='{{csrfToken}}'>
-      <input class='member-submit' type='submit' value='Add Member'/>
-    </form>
-    <div id='member-results'></div>
+    <h1>Add Member</h1>
+    <div id='add-member-container'>
+      <form id='member-form'
+              name='member-form'
+              class='member-form'>
+        <label for='firstName'>First Name: <span class='form-required'>*</span>
+          <input class='member-first-name' type='text' name='firstName' placeholder='first name' />
+        </label>
+        <label for='lastName'>Last Name: <span class='form-required'>*</span>
+          <input class='member-last-name' type='text' name='lastName' placeholder='last name' />
+        </label>
+        <label for='email'>Email:
+          <input class='member-email' type='text' name='email' placeholder='email address' />
+        </label>
+        <label for='cards'>Card: <span class='form-required'>*</span>
+          <input class='member-card' type='text' name='cards' placeholder='card id' />
+        </label>
+        <input type='hidden' name='_csrf' value='{{csrfToken}}'>
+        <label class='form-required'>* Required</label>
+        <input class='member-submit' type='submit' value='Add Member'/>
+      </form>
+      <div id='member-results'></div>
+    </div>
   </div>
 </body>
 </html>

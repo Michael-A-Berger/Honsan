@@ -31,7 +31,7 @@ const AccountSchema = new mongoose.Schema({
     trim: true,
   },
   added_date: {
-    type: Date,
+    type: String,
     default: Date.now,
   },
 });

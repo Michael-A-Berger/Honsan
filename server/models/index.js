@@ -10,6 +10,9 @@ const AccountModel = require('./AccountModel.js');
 // Setting the constants
 const lengthUID = 16;
 
+// NullOrUndefined()
+const NullOrUndefined = obj => (obj === null || obj === undefined);
+
 // GenerateUniqueID()
 const GenerateUniqueID = () => {
   const randomValue = crypto.randomBytes(lengthUID);
@@ -26,6 +29,18 @@ const CurrentTime = () => {
   return toReturn;
 };
 
+// DayFromDate()
+const DayFromDate = (d) => {
+  const time = new Date(d);
+  let toReturn = null;
+  if (NullOrUndefined(d)) {
+    toReturn = null;
+  } else {
+    toReturn = `${time.getMonth() + 1}-${time.getDate()}-${time.getFullYear()}`;
+  }
+  return toReturn;
+};
+
 // UnexpectedServerError()
 const UnexpectedServerError = (rq, rp) => {
   const v = rp.status(500).json({ error: 'An unexpected error occurred, please try again later' });
@@ -38,7 +53,9 @@ module.exports = {
   Copy: CopyModel,
   Member: MemberModel,
   Account: AccountModel,
+  NullOrUndefined,
   GenerateUniqueID,
   CurrentTime,
+  DayFromDate,
   UnexpectedServerError,
 };

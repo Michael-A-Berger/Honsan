@@ -107,6 +107,11 @@ const GetEntryPage = (rq, rp) => {
       // IF there are some Copy docs assigned to the Entry doc...
       if (docCopies.length > 0) {
         currentEntry.copies = docCopies;
+        let dueDate = '';
+        for (let num = 0; num < currentEntry.copies.length; num++) {
+          dueDate = models.DayFromDate(currentEntry.copies[num].due_date);
+          currentEntry.copies[num].due_date_str = dueDate;
+        }
       }
 
       // console.dir(currentEntry);

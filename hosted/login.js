@@ -9,10 +9,7 @@ var LoginResponse = function LoginResponse(data) {
   if (data.error) {
     loginResults.innerHTML = '<p><b>ERROR:</b> ' + data.error + '</p>';
   } else {
-    loginResults.innerHTML = '<p>Login was successful!</p>';
-    setTimeout(function () {
-      window.location.replace(data.redirect);
-    }, 2000);
+    window.location.replace(data.redirect);
   }
 };
 
