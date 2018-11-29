@@ -31,6 +31,7 @@ const Signup = (request, rp) => {
       salt: returnSalt,
       password: hash,
     };
+    accountData.accountId = models.GenerateUniqueID();
 
     // Creating the new account + Saving it
     const newAccount = new _Account.Model(accountData);

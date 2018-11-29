@@ -1,5 +1,9 @@
 'use strict';
 
+// Setting up the ESLint rules
+/* eslint-env browser */
+/* global SendAJAX SerializeForm */ // Taken from [ helper.js ]
+
 // The global variables
 var searchForm = {};
 var entryForm = {};
@@ -39,7 +43,7 @@ var SearchSubmitted = function SearchSubmitted(e) {
   }
 
   // Searching Kitsu
-  SearchKitsu(searchData.query, searchData.searchType === 'anime' ? true : false);
+  SearchKitsu(searchData.query, searchData.searchType === 'anime');
 
   // Preventing the default behavior from happening
   e.preventDefault();
@@ -48,22 +52,8 @@ var SearchSubmitted = function SearchSubmitted(e) {
 
 // EntrySubmitted()
 var EntrySubmitted = function EntrySubmitted(e) {
-  // Getting the entry form values
-  var entryData = {};
-  for (var num = 0; num < entryForm.elements.length; num++) {
-    if (entryForm.elements[num].name !== '') {
-      entryData[entryForm.elements[num].name] = entryForm.elements[num].value;
-    }
-  }
-  console.dir(entryData);
-
   // Defining the data string
-  var dataString = '';
-  var entryKeys = Object.keys(entryData);
-  for (var _num = 0; _num < entryKeys.length; _num++) {
-    dataString += entryKeys[_num] + '=' + entryData[entryKeys[_num]];
-    if (_num < entryKeys.length - 1) dataString += '&';
-  }
+  var dataString = SerializeForm(entryForm);
 
   // Sending the AJAX call to make the entry
   SendAJAX('POST', '/make_entry', dataString, EntryResponse);
@@ -85,5 +75,5 @@ var setup = function setup() {
   entryForm.addEventListener('submit', EntrySubmitted);
 };
 
-// Setting up the 
+// Setting up the
 window.onload = setup;

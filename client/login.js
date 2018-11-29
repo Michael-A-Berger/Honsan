@@ -1,3 +1,7 @@
+// Setting up the ESLint rules
+/* eslint-env browser */
+/* global SendAJAX SerializeForm */ // Taken from [ helper.js ]
+
 // The global variables
 let loginForm = {};
 let loginResults = {};
@@ -13,26 +17,12 @@ const LoginResponse = (data) => {
 
 // LoginSubmitted()
 const LoginSubmitted = (e) => {
-  // Getting the Login form values
-  let memberData = {};
-  for (let num = 0; num < loginForm.elements.length; num++) {
-    if (loginForm.elements[num].name !== '') {
-      memberData[loginForm.elements[num].name] = loginForm.elements[num].value;
-    }
-  }
-  console.dir(memberData);
-  
   // Defining the data string
-  let dataString = '';
-  const entryKeys = Object.keys(memberData);
-  for (let num = 0; num < entryKeys.length; num++) {
-    dataString += entryKeys[num] + '=' + memberData[entryKeys[num]];
-    if (num < entryKeys.length - 1) dataString += '&';
-  }
-  
+  const dataString = SerializeForm(loginForm);
+
   // Sending the AJAX call to log in
   SendAJAX('POST', '/confirm_login', dataString, LoginResponse);
-  
+
   // Preventing the default behavior from happening
   e.preventDefault();
   return false;
@@ -43,30 +33,10 @@ const setup = () => {
   // Getting the native page elements
   loginForm = document.querySelector('#login-form');
   loginResults = document.querySelector('#login-results');
-  
+
   // Setting up the form functions
   loginForm.addEventListener('submit', LoginSubmitted);
 };
 
-// Setting up the 
+// Setting up the
 window.onload = setup;
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-

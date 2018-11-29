@@ -14,6 +14,11 @@ const keyLength = 128;
 
 // Defining the Member schema
 const AccountSchema = new mongoose.Schema({
+  account_id: {
+    type: String,
+    required: true,
+    unique: true,
+  },
   username: {
     type: String,
     required: true,
@@ -30,6 +35,11 @@ const AccountSchema = new mongoose.Schema({
     required: true,
     trim: true,
   },
+  avatar: {
+    type: String,
+    trim: true,
+    default: '/assets/media/avatar01.png',
+  },
   added_date: {
     type: String,
     default: Date.now,
@@ -38,7 +48,9 @@ const AccountSchema = new mongoose.Schema({
 
 // ToAPI()
 AccountSchema.statics.FormatForSession = doc => ({
+  account_id: doc.accountId,
   username: doc.username,
+  avatar: doc.avatar,
   _id: doc._id,
 });
 

@@ -1,5 +1,9 @@
 'use strict';
 
+// Setting up the ESLint rules
+/* eslint-env browser */
+/* global SendAJAX SerializeForm */ // Taken from [ helper.js ]
+
 // The global variables
 var copyForm = {};
 var copyResults = {};
@@ -9,28 +13,14 @@ var CopyResponse = function CopyResponse(data) {
   if (data.error) {
     copyResults.innerHTML = '<p><b>ERROR:</b> ' + data.error + '</p>';
   } else {
-    location.reload();
+    window.location.reload();
   }
 };
 
 // CopySubmitted()
 var CopySubmitted = function CopySubmitted(e) {
-  // Getting the Copy form values
-  var copyData = {};
-  for (var num = 0; num < copyForm.elements.length; num++) {
-    if (copyForm.elements[num].name !== '') {
-      copyData[copyForm.elements[num].name] = copyForm.elements[num].value;
-    }
-  }
-  console.dir(copyData);
-
-  // Defining the data string
-  var dataString = '';
-  var entryKeys = Object.keys(copyData);
-  for (var _num = 0; _num < entryKeys.length; _num++) {
-    dataString += entryKeys[_num] + '=' + copyData[entryKeys[_num]];
-    if (_num < entryKeys.length - 1) dataString += '&';
-  }
+  // Serializing the form
+  var dataString = SerializeForm(copyForm);
 
   // Sending the AJAX call to make the Copy
   SendAJAX('POST', '/make_copy', dataString, CopyResponse);
@@ -50,5 +40,5 @@ var setup = function setup() {
   copyForm.addEventListener('submit', CopySubmitted);
 };
 
-// Setting up the 
+// Setting up the
 window.onload = setup;

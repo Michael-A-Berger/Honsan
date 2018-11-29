@@ -1,5 +1,9 @@
 'use strict';
 
+// Setting up the ESLint rules
+/* eslint-env browser */
+/* global SendAJAX SerializeForm */ // Taken from [ helper.js ]
+
 // The global variables
 var memberForm = {};
 var memberResults = {};
@@ -15,22 +19,8 @@ var MemberResponse = function MemberResponse(data) {
 
 // MemberSubmitted()
 var MemberSubmitted = function MemberSubmitted(e) {
-  // Getting the Member form values
-  var memberData = {};
-  for (var num = 0; num < memberForm.elements.length; num++) {
-    if (memberForm.elements[num].name !== '') {
-      memberData[memberForm.elements[num].name] = memberForm.elements[num].value;
-    }
-  }
-  console.dir(memberData);
-
   // Defining the data string
-  var dataString = '';
-  var entryKeys = Object.keys(memberData);
-  for (var _num = 0; _num < entryKeys.length; _num++) {
-    dataString += entryKeys[_num] + '=' + memberData[entryKeys[_num]];
-    if (_num < entryKeys.length - 1) dataString += '&';
-  }
+  var dataString = SerializeForm(memberForm);
 
   // Sending the AJAX call to make the Member
   SendAJAX('POST', '/make_member', dataString, MemberResponse);
@@ -50,5 +40,5 @@ var setup = function setup() {
   memberForm.addEventListener('submit', MemberSubmitted);
 };
 
-// Setting up the 
+// Setting up the
 window.onload = setup;

@@ -1,5 +1,9 @@
 'use strict';
 
+// Setting up the ESLint rules
+/* eslint-env browser */
+/* global SendAJAX */ // Taken from [ helper.js ]
+
 // The global variables
 var signinResults = {};
 
@@ -9,7 +13,7 @@ var SigninResponse = function SigninResponse(data) {
     signinResults.innerHTML = '<p><b>ERROR:</b> ' + data.error + '</p>';
   } else {
     // signinResults.innerHTML = `<p>${data.message}</p>`;
-    location.reload();
+    window.location.reload();
   }
 };
 
@@ -29,12 +33,6 @@ var Renew = function Renew(copyId, csrfToken) {
 
   // Sending the AJAX call to sign in
   SendAJAX('POST', '/renew_copy', dataString, SigninResponse);
-};
-
-// setup()
-var setup = function setup() {
-  // Getting the native page elements
-  signinResults = document.querySelector('#signin-results');
 };
 
 // Setting up
