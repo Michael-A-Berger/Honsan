@@ -1,6 +1,6 @@
 // Setting up the ESLint rules
 /* eslint-env browser */
-
+/* eslint-disable no-unused-vars */
 
 // SendAJAX()
 const SendAJAX = (httpMethod, action, postData, callback) => {
@@ -24,15 +24,24 @@ const SendAJAX = (httpMethod, action, postData, callback) => {
   xhr.send(postData);
 };
 
-// SerializeForm()
-const SerializeForm = (form) => {
-  // Getting the form values
+// FormJSON()
+const FormJSON = (form) => {
+  // Putting the form values into a JSON object
   const formData = {};
   for (let num = 0; num < form.elements.length; num++) {
     if (form.elements[num].name !== '') {
       formData[form.elements[num].name] = form.elements[num].value;
     }
   }
+
+  // Returning the form JSON
+  return formData;
+};
+
+// SerializeForm()
+const SerializeForm = (form) => {
+  // Getting the form values
+  const formData = FormJSON(form);
   console.dir(formData);
 
   // Defining the data string

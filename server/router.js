@@ -5,6 +5,9 @@ const controllers = require('./controllers');
 // Setting up the routing
 const router = (app) => {
   // GET
+  app.get('/GetToken',
+    middleware.RequiresSecure,
+    controllers.Account.GetToken);
   app.get('/',
     middleware.RequiresLogin,
     controllers.Entry.GetHomepage);

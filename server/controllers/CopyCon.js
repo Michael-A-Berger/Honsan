@@ -34,9 +34,9 @@ const MakeCopy = (rq, rp) => {
       nickname: `${rq.body.nickname}`,
       description: `${rq.body.description}`,
       quality: `${rq.body.quality}`,
+      entryName: docEntry.en_name,
+      copyId: models.GenerateUniqueID(),
     };
-    copyData.entryName = docEntry.en_name;
-    copyData.copyId = models.GenerateUniqueID();
     const apiReady = _Copy.Model.ToAPI(copyData);
 
     // Saving the new Copy to the database

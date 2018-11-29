@@ -47,8 +47,17 @@ const AccountSchema = new mongoose.Schema({
 });
 
 // ToAPI()
-AccountSchema.statics.FormatForSession = doc => ({
+AccountSchema.statics.ToAPI = doc => ({
   account_id: doc.accountId,
+  username: doc.username,
+  salt: doc.salt,
+  password: doc.password,
+  avatar: doc.avatar,
+});
+
+// FormatForSession()
+AccountSchema.statics.FormatForSession = doc => ({
+  account_id: doc.account_id,
   username: doc.username,
   avatar: doc.avatar,
   _id: doc._id,

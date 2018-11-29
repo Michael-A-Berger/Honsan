@@ -20,8 +20,8 @@ const MakeEntry = (rq, rp) => {
     publisher: `${rq.body.publisher}`,
     description: `${rq.body.description}`,
     mediaType: `${rq.body.mediaType}`,
+    entryId: models.GenerateUniqueID(),
   };
-  entryData.entryId = models.GenerateUniqueID();
   const apiReady = _Entry.Model.ToAPI(entryData);
 
   // Saving the new entry in the database

@@ -23,7 +23,7 @@ gulp.task(clientTask, () => {
 
   return gulp.src(clientLoc)
           .pipe(babel({
-            presets: ['env']
+            presets: ['react']
           }))
             .pipe(gulp.dest('hosted'));
 });

@@ -4,6 +4,17 @@ const models = require('../models');
 // Setting the Model constants
 const _Account = models.Account;
 
+// GetToken()
+const GetToken = (request, response) => {
+  // Creating assignment-able Request & Response objects
+  const rq = request;
+  const rp = response;
+
+  // Creating + Sending the CSRF token
+  const csrfJSON = { csrfToken: rq.csrfToken() };
+  rp.json(csrfJSON);
+};
+
 // Signup()
 const Signup = (request, rp) => {
   // Creating a copy of the Request object to allow session assignment
@@ -30,11 +41,12 @@ const Signup = (request, rp) => {
       username: rq.body.username,
       salt: returnSalt,
       password: hash,
+      accountId: models.GenerateUniqueID(),
     };
-    accountData.accountId = models.GenerateUniqueID();
+    const apiReady = _Account.Model.ToAPI(accountData);
 
     // Creating the new account + Saving it
-    const newAccount = new _Account.Model(accountData);
+    const newAccount = new _Account.Model(apiReady);
     const accountPromise = newAccount.save();
 
     // Handling the saving + errors
@@ -115,6 +127,7 @@ const GetSignupPage = (rq, rp) => {
 
 // Defining the exports
 module.exports = {
+  GetToken,
   Signup,
   Login,
   Logout,

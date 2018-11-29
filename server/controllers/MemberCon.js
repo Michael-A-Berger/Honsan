@@ -20,9 +20,9 @@ const MakeMember = (rq, rp) => {
     firstName: `${rq.body.firstName}`,
     lastName: `${rq.body.lastName}`,
     email: `${rq.body.email}`,
-    cards: tempCards.split(','),
+    cards: tempCards.replace(' ', '').split(','),
+    memberId: models.GenerateUniqueID(),
   };
-  memberData.memberId = models.GenerateUniqueID();
   const apiReady = _Member.Model.ToAPI(memberData);
 
   // Saving the new Member to the database

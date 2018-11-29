@@ -1,6 +1,9 @@
 // Setting up the ESLint rules
 /* eslint-env browser */
-/* global SendAJAX SerializeForm */ // Taken from [ helper.js ]
+/* global SendAJAX FormJSON SerializeForm */ // Taken from [ helper.js ]
+/* global ReactDOM */
+/* eslint-disable react/react-in-jsx-scope */
+/* eslint-disable react/prop-types */
 
 // The global variables
 let loginForm = {};
@@ -15,28 +18,67 @@ const LoginResponse = (data) => {
   }
 };
 
-// LoginSubmitted()
-const LoginSubmitted = (e) => {
-  // Defining the data string
-  const dataString = SerializeForm(loginForm);
 
-  // Sending the AJAX call to log in
-  SendAJAX('POST', '/confirm_login', dataString, LoginResponse);
-
-  // Preventing the default behavior from happening
+// SubmitLogin()
+const SubmitLogin = (e) => {
+  // Preventing the default behavior
   e.preventDefault();
+
+  // Getting the login details serialized
+  const formData = FormJSON(loginForm);
+
+  // IF the login details are filled out...
+  if (formData.username !== '' && formData.password !== '') {
+    // Sending the AJAX call to log in
+    SendAJAX('POST', '/confirm_login', SerializeForm(loginForm), LoginResponse);
+  }
+
+  // Returning false to prevent the default behavior
   return false;
 };
 
-// setup()
-const setup = () => {
-  // Getting the native page elements
+// LoginReact()
+const LoginReact = props => (
+    <div>
+      <div id='login-container'>
+        <form id='login-form'
+              name='login-form'
+              className='login-form'
+              onSubmit={SubmitLogin}>
+          <label htmlFor='username'>Username:
+            <input className='login-username' type='text' name='username' placeholder='username' />
+          </label>
+          <label htmlFor='password'>Password:
+            <input className='login-password' type='password' name='password' placeholder='password' />
+          </label>
+          <input type='hidden' name='_csrf' value={props.csrf} />
+          <input className='login-submit' type='submit' value='Log In'/>
+        </form>
+      </div>
+      <div id='login-results'></div>
+    </div>
+);
+
+// CreateLogin()
+const CreateLogin = (csrf) => {
+  ReactDOM.render(<LoginReact csrf={csrf} />, document.querySelector('#content'));
   loginForm = document.querySelector('#login-form');
   loginResults = document.querySelector('#login-results');
+};
 
-  // Setting up the form functions
-  loginForm.addEventListener('submit', LoginSubmitted);
+// setup()
+const setup = (csrfValue) => {
+  // Creating the Login form w/ React
+  CreateLogin(csrfValue);
+};
+
+const getToken = () => {
+  SendAJAX('GET', '/GetToken', null, (result) => {
+    setup(result.csrfToken);
+  });
 };
 
 // Setting up the
-window.onload = setup;
+window.addEventListener('load', () => {
+  getToken();
+});
