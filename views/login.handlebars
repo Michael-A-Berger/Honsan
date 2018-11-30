@@ -13,25 +13,9 @@
 <body>
   <img src='/assets/media/banner.png' alt='A Banner Ad (eventually)' id='banner-ad'>
   <ul id='navbar'>
-    <li><a href='/login' class='navbar-selected'>Log In</a></li>
-    <li><a href='/signup'>Sign Up</a></li>
+    <li><a href='' id='navbar-login' class='navbar-selected'>Log In</a></li>
+    <li><a href='' id='navbar-signup'>Sign Up</a></li>
   </ul>
-  <div id='content'>
-    <div id='login-container'>
-      <form id='login-form'
-            name='login-form'
-            class='login-form'>
-        <label for='username'>Username:
-          <input class='login-username' type='text' name='username' placeholder='username' />
-        </label>
-        <label for='password'>Password:
-          <input class='login-password' type='password' name='password' placeholder='password' />
-        </label>
-        <input type='hidden' name='_csrf' value='{{csrfToken}}'>
-        <input class='login-submit' type='submit' value='Log In'/>
-      </form>
-    </div>
-    <div id='login-results'></div>
-  </div>
+  <div id='content'></div>
 </body>
 </html>
