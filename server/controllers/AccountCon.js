@@ -120,11 +120,6 @@ const GetLoginPage = (rq, rp) => {
   rp.render('login', { csrfToken: rq.csrfToken() });
 };
 
-// GetSignupPage()
-const GetSignupPage = (rq, rp) => {
-  rp.render('signup', { csrfToken: rq.csrfToken() });
-};
-
 // Defining the exports
 module.exports = {
   GetToken,
@@ -132,5 +127,4 @@ module.exports = {
   Login,
   Logout,
   GetLoginPage,
-  GetSignupPage,
 };

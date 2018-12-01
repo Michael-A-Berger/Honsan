@@ -1,22 +1,11 @@
-=== TUESDAY ===
+=== THINGS TO DO ===
 
-- Finish Models + Controllers
-    - Member
-    - Account
-
-=== WEDNESDAY ===
-
-- Middleware + Searching capabilities
-    - Middleware
-        - Logging in
-    - Searching
-        - Catalogue
-        - Members
-
-=== THURSDAY ===
-
-- CSS Styling + banner
-
-=== FRIDAY (MORNING + AFTERNOON) ===
-
-- Documentation
+- Convert to React
+- Deleting Entries/Copies/Members
+- Changing password
+- 404 page
+- CSS redesign
+- Kitsu search
+- Account page
+- Server Instance settings
+- 

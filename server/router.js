@@ -33,10 +33,6 @@ const router = (app) => {
     middleware.RequiresLogout,
     middleware.RequiresSecure,
     controllers.Account.GetLoginPage);
-  app.get('/signup',
-    middleware.RequiresLogout,
-    middleware.RequiresSecure,
-    controllers.Account.GetSignupPage);
   app.get('/logout',
     middleware.RequiresLogin,
     controllers.Account.Logout);
