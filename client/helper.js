@@ -24,6 +24,13 @@ const SendAJAX = (httpMethod, action, postData, callback) => {
   xhr.send(postData);
 };
 
+// GetToken()
+const GetToken = (callback) => {
+  SendAJAX('GET', '/GetToken', null, (result) => {
+    callback(result.csrfToken);
+  });
+};
+
 // FormJSON()
 const FormJSON = (form) => {
   // Putting the form values into a JSON object

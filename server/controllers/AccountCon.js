@@ -120,6 +120,11 @@ const GetLoginPage = (rq, rp) => {
   rp.render('login', { csrfToken: rq.csrfToken() });
 };
 
+// GetAppPage()
+const GetAppPage = (rq, rp) => {
+  rp.render('app', { username: rq.session.account.username });
+};
+
 // Defining the exports
 module.exports = {
   GetToken,
@@ -127,4 +132,5 @@ module.exports = {
   Login,
   Logout,
   GetLoginPage,
+  GetAppPage,
 };

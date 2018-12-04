@@ -26,6 +26,13 @@ var SendAJAX = function SendAJAX(httpMethod, action, postData, callback) {
   xhr.send(postData);
 };
 
+// GetToken()
+var GetToken = function GetToken(callback) {
+  SendAJAX('GET', '/GetToken', null, function (result) {
+    callback(result.csrfToken);
+  });
+};
+
 // FormJSON()
 var FormJSON = function FormJSON(form) {
   // Putting the form values into a JSON object

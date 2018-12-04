@@ -2,7 +2,7 @@
 
 // Setting up the ESLint rules
 /* eslint-env browser */
-/* global SendAJAX FormJSON SerializeForm */ // Taken from [ helper.js ]
+/* global SendAJAX FormJSON SerializeForm GetToken */ // Taken from [ helper.js ]
 /* global ReactDOM */
 /* eslint-disable react/react-in-jsx-scope */
 /* eslint-disable react/prop-types */
@@ -181,13 +181,7 @@ var setup = function setup(csrfValue) {
   CreateLogin(csrfValue);
 };
 
-var getToken = function getToken() {
-  SendAJAX('GET', '/GetToken', null, function (result) {
-    setup(result.csrfToken);
-  });
-};
-
 // Setting up the
 window.addEventListener('load', function () {
-  getToken();
+  GetToken(setup);
 });

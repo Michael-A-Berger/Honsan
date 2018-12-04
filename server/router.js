@@ -37,6 +37,14 @@ const router = (app) => {
     middleware.RequiresLogin,
     controllers.Account.Logout);
 
+  // NEW APP GETS
+  app.get('/app',
+    middleware.RequiresLogin,
+    controllers.Account.GetAppPage);
+  app.get('/entry/:entry_id',
+    middleware.RequiresLogin,
+    controllers.Account.GetAppPage);
+
   // POST
   app.post('/make_entry',
     middleware.RequiresLogin,
