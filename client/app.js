@@ -60,6 +60,101 @@ const RenewCopy = () => {
 //  REACT METHODS
 // ::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
 
+// AddEntryReact()
+const AddEntryReact = (props) => {
+  // Defining the React code to return
+  const returnReact = (
+    <div>
+      <h1>Add Entry</h1>
+      <form id='search-form'
+            name='search-form'
+            className='search-form'>
+        <h3>Search </h3>
+        <select name='searchType'>
+          <option value='anime'>Anime</option>
+          <option value='manga'>Manga</option>
+        </select>
+        <h3> :</h3>
+        <input id='search-query' type='text' name='query' placeholder='search term...' />
+        <input id='search-submit' type='submit' value='Search Kitsu' />
+      </form>
+      <div id="search-results"></div>
+      <div id='add-entry-container'>
+        <form id='entry-form'
+                name='entry-form'
+                className='entry-form'>
+          <label htmlFor='engName'>English Name: <span className='form-required'>*</span>
+            <input id='entry-eng-name' type='text' name='engName' placeholder='eng. name' />
+          </label>
+          <label htmlFor='japName'>Japanese Name:
+            <input id='entry-jap-name' type='text' name='japName' placeholder='jap. name' />
+          </label>
+          <label htmlFor='trnName'>Transliteral Name:
+            <input id='entry-trn-name' type='text' name='trnName' placeholder='trn. name' />
+          </label>
+          <h3>Description:</h3>
+          <textarea id='entry-description' form='entry-form' rows='6' cols='45' name='description' placeholder='description'></textarea>
+          <label htmlFor='genres'>Genres:
+            <input id='entry-genres' type='text' name='genres' placeholder='ex; action, adventure' />
+          </label>
+          <label htmlFor='publisher'>Publisher:
+            <input id='entry-publisher' type='text' name='publisher' placeholder='publisher' />
+          </label>
+          <label htmlFor='mediaType'>Media Type:
+            <select name='mediaType'>
+              <option value='anime'>Anime</option>
+              <option value='manga'>Manga</option>
+              <option value='other'>Other</option>
+            </select>
+          </label>
+          <input type='hidden' name='_csrf' value={props.csrfToken} />
+          <label className='form-required'>* Required</label>
+          <input className='entry-submit' type='submit' value='Add to Catalogue' />
+        </form>
+        <div id='entry-results'></div>
+      </div>
+    </div>
+  );
+
+  // Returning the React code
+  return returnReact;
+};
+
+// AddMemberReact()
+const AddMemberReact = (props) => {
+  // Defining the React to return
+  const returnReact = (
+    <div>
+      <h1>Add Member</h1>
+      <div id='add-member-container'>
+        <form id='member-form'
+                name='member-form'
+                className='member-form'>
+          <label htmlFor='firstName'>First Name: <span className='form-required'>*</span>
+            <input className='member-first-name' type='text' name='firstName' placeholder='first name' />
+          </label>
+          <label htmlFor='lastName'>Last Name: <span className='form-required'>*</span>
+            <input className='member-last-name' type='text' name='lastName' placeholder='last name' />
+          </label>
+          <label htmlFor='email'>Email:
+            <input className='member-email' type='text' name='email' placeholder='email address' />
+          </label>
+          <label htmlFor='cards'>Card: <span className='form-required'>*</span>
+            <input className='member-card' type='text' name='cards' placeholder='card id' />
+          </label>
+          <input type='hidden' name='_csrf' value={props.csrfToken} />
+          <label className='form-required'>* Required</label>
+          <input className='member-submit' type='submit' value='Add Member'/>
+        </form>
+        <div id='member-results'></div>
+      </div>
+    </div>
+  );
+
+  // Returning the React code
+  return returnReact;
+};
+
 // EntryCopiesTableReact()
 const EntryCopiesTableReact = (props) => {
   // Creating the React Rows array to send back
@@ -120,7 +215,6 @@ const EntryCopiesTableReact = (props) => {
 const EntryReact = (props) => {
   // Defining the React to send back
   let returnReact = '';
-  console.dir(props);
 
   // IF the entry ID exist...
   if (props.entry) {
@@ -309,7 +403,6 @@ const CatalogReact = (props) => {
         return false;
       };
       const entryLink = <a href='' onClick={toEntryFunc}>{props.entries[num].engName}</a>;
-      console.dir(props.entries[num]);
 
       // Adding the Entry to the array
       entriesReact.push(
@@ -437,6 +530,24 @@ FillContentByPathName = () => {
     return;
   }
 
+  // IF the path name is to add an Entry...
+  if (path === '/add_entry') {
+    GetToken((csrfValue) => {
+      ReactDOM.render(<AddEntryReact csrfToken={csrfValue} />, reactContainer);
+    });
+    newEntryNavButton.classList.add(navbarSelectedClass);
+    return;
+  }
+
+  // IF the path name is to add a Member...
+  if (path === '/add_member') {
+    GetToken((csrfValue) => {
+      ReactDOM.render(<AddMemberReact csrfToken={csrfValue} />, reactContainer);
+    });
+    addMemberNavButton.classList.add(navbarSelectedClass);
+    return;
+  }
+
   // IF the path name is to log out...
   if (path === '/logout') {
     ReactDOM.render(<div><h2>Logging out...</h2></div>, reactContainer);
@@ -451,7 +562,7 @@ FillContentByPathName = () => {
 window.onpopstate = FillContentByPathName;
 
 // setup()
-const setup = (csrfValue) => {
+const setup = () => {
   // Getting the React container
   reactContainer = document.querySelector('#content');
 
@@ -463,7 +574,7 @@ const setup = (csrfValue) => {
   logoutNavButton = document.querySelector('#navbar-logout');
 
   // Setting the event handlers
-  SetButtonListener(newEntryNavButton, GetEditHistoryFunc('/entry/7E12ABD9898'));
+  SetButtonListener(newEntryNavButton, GetEditHistoryFunc('/add_entry'));
   SetButtonListener(addMemberNavButton, GetEditHistoryFunc('/add_member'));
   SetButtonListener(catalogNavButton, GetEditHistoryFunc('/catalog'));
   SetButtonListener(memberListNavButton, GetEditHistoryFunc('/members'));
@@ -475,5 +586,5 @@ const setup = (csrfValue) => {
 
 // window.onload()
 window.addEventListener('load', () => {
-  GetToken(setup);
+  setup();
 });

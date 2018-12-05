@@ -64,6 +64,213 @@ var RenewCopy = function RenewCopy() {
 //  REACT METHODS
 // ::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
 
+// AddEntryReact()
+var AddEntryReact = function AddEntryReact(props) {
+  // Defining the React code to return
+  var returnReact = React.createElement(
+    'div',
+    null,
+    React.createElement(
+      'h1',
+      null,
+      'Add Entry'
+    ),
+    React.createElement(
+      'form',
+      { id: 'search-form',
+        name: 'search-form',
+        className: 'search-form' },
+      React.createElement(
+        'h3',
+        null,
+        'Search '
+      ),
+      React.createElement(
+        'select',
+        { name: 'searchType' },
+        React.createElement(
+          'option',
+          { value: 'anime' },
+          'Anime'
+        ),
+        React.createElement(
+          'option',
+          { value: 'manga' },
+          'Manga'
+        )
+      ),
+      React.createElement(
+        'h3',
+        null,
+        ' :'
+      ),
+      React.createElement('input', { id: 'search-query', type: 'text', name: 'query', placeholder: 'search term...' }),
+      React.createElement('input', { id: 'search-submit', type: 'submit', value: 'Search Kitsu' })
+    ),
+    React.createElement('div', { id: 'search-results' }),
+    React.createElement(
+      'div',
+      { id: 'add-entry-container' },
+      React.createElement(
+        'form',
+        { id: 'entry-form',
+          name: 'entry-form',
+          className: 'entry-form' },
+        React.createElement(
+          'label',
+          { htmlFor: 'engName' },
+          'English Name: ',
+          React.createElement(
+            'span',
+            { className: 'form-required' },
+            '*'
+          ),
+          React.createElement('input', { id: 'entry-eng-name', type: 'text', name: 'engName', placeholder: 'eng. name' })
+        ),
+        React.createElement(
+          'label',
+          { htmlFor: 'japName' },
+          'Japanese Name:',
+          React.createElement('input', { id: 'entry-jap-name', type: 'text', name: 'japName', placeholder: 'jap. name' })
+        ),
+        React.createElement(
+          'label',
+          { htmlFor: 'trnName' },
+          'Transliteral Name:',
+          React.createElement('input', { id: 'entry-trn-name', type: 'text', name: 'trnName', placeholder: 'trn. name' })
+        ),
+        React.createElement(
+          'h3',
+          null,
+          'Description:'
+        ),
+        React.createElement('textarea', { id: 'entry-description', form: 'entry-form', rows: '6', cols: '45', name: 'description', placeholder: 'description' }),
+        React.createElement(
+          'label',
+          { htmlFor: 'genres' },
+          'Genres:',
+          React.createElement('input', { id: 'entry-genres', type: 'text', name: 'genres', placeholder: 'ex; action, adventure' })
+        ),
+        React.createElement(
+          'label',
+          { htmlFor: 'publisher' },
+          'Publisher:',
+          React.createElement('input', { id: 'entry-publisher', type: 'text', name: 'publisher', placeholder: 'publisher' })
+        ),
+        React.createElement(
+          'label',
+          { htmlFor: 'mediaType' },
+          'Media Type:',
+          React.createElement(
+            'select',
+            { name: 'mediaType' },
+            React.createElement(
+              'option',
+              { value: 'anime' },
+              'Anime'
+            ),
+            React.createElement(
+              'option',
+              { value: 'manga' },
+              'Manga'
+            ),
+            React.createElement(
+              'option',
+              { value: 'other' },
+              'Other'
+            )
+          )
+        ),
+        React.createElement('input', { type: 'hidden', name: '_csrf', value: props.csrfToken }),
+        React.createElement(
+          'label',
+          { className: 'form-required' },
+          '* Required'
+        ),
+        React.createElement('input', { className: 'entry-submit', type: 'submit', value: 'Add to Catalogue' })
+      ),
+      React.createElement('div', { id: 'entry-results' })
+    )
+  );
+
+  // Returning the React code
+  return returnReact;
+};
+
+// AddMemberReact()
+var AddMemberReact = function AddMemberReact(props) {
+  // Defining the React to return
+  var returnReact = React.createElement(
+    'div',
+    null,
+    React.createElement(
+      'h1',
+      null,
+      'Add Member'
+    ),
+    React.createElement(
+      'div',
+      { id: 'add-member-container' },
+      React.createElement(
+        'form',
+        { id: 'member-form',
+          name: 'member-form',
+          className: 'member-form' },
+        React.createElement(
+          'label',
+          { htmlFor: 'firstName' },
+          'First Name: ',
+          React.createElement(
+            'span',
+            { className: 'form-required' },
+            '*'
+          ),
+          React.createElement('input', { className: 'member-first-name', type: 'text', name: 'firstName', placeholder: 'first name' })
+        ),
+        React.createElement(
+          'label',
+          { htmlFor: 'lastName' },
+          'Last Name: ',
+          React.createElement(
+            'span',
+            { className: 'form-required' },
+            '*'
+          ),
+          React.createElement('input', { className: 'member-last-name', type: 'text', name: 'lastName', placeholder: 'last name' })
+        ),
+        React.createElement(
+          'label',
+          { htmlFor: 'email' },
+          'Email:',
+          React.createElement('input', { className: 'member-email', type: 'text', name: 'email', placeholder: 'email address' })
+        ),
+        React.createElement(
+          'label',
+          { htmlFor: 'cards' },
+          'Card: ',
+          React.createElement(
+            'span',
+            { className: 'form-required' },
+            '*'
+          ),
+          React.createElement('input', { className: 'member-card', type: 'text', name: 'cards', placeholder: 'card id' })
+        ),
+        React.createElement('input', { type: 'hidden', name: '_csrf', value: props.csrfToken }),
+        React.createElement(
+          'label',
+          { className: 'form-required' },
+          '* Required'
+        ),
+        React.createElement('input', { className: 'member-submit', type: 'submit', value: 'Add Member' })
+      ),
+      React.createElement('div', { id: 'member-results' })
+    )
+  );
+
+  // Returning the React code
+  return returnReact;
+};
+
 // EntryCopiesTableReact()
 var EntryCopiesTableReact = function EntryCopiesTableReact(props) {
   // Creating the React Rows array to send back
@@ -192,7 +399,6 @@ var EntryCopiesTableReact = function EntryCopiesTableReact(props) {
 var EntryReact = function EntryReact(props) {
   // Defining the React to send back
   var returnReact = '';
-  console.dir(props);
 
   // IF the entry ID exist...
   if (props.entry) {
@@ -638,7 +844,6 @@ var CatalogReact = function CatalogReact(props) {
         { href: '', onClick: toEntryFunc },
         props.entries[num].engName
       );
-      console.dir(props.entries[num]);
 
       // Adding the Entry to the array
       entriesReact.push(React.createElement(
@@ -888,6 +1093,24 @@ FillContentByPathName = function FillContentByPathName() {
     return;
   }
 
+  // IF the path name is to add an Entry...
+  if (path === '/add_entry') {
+    GetToken(function (csrfValue) {
+      ReactDOM.render(React.createElement(AddEntryReact, { csrfToken: csrfValue }), reactContainer);
+    });
+    newEntryNavButton.classList.add(navbarSelectedClass);
+    return;
+  }
+
+  // IF the path name is to add a Member...
+  if (path === '/add_member') {
+    GetToken(function (csrfValue) {
+      ReactDOM.render(React.createElement(AddMemberReact, { csrfToken: csrfValue }), reactContainer);
+    });
+    addMemberNavButton.classList.add(navbarSelectedClass);
+    return;
+  }
+
   // IF the path name is to log out...
   if (path === '/logout') {
     ReactDOM.render(React.createElement(
@@ -918,7 +1141,7 @@ FillContentByPathName = function FillContentByPathName() {
 window.onpopstate = FillContentByPathName;
 
 // setup()
-var setup = function setup(csrfValue) {
+var setup = function setup() {
   // Getting the React container
   reactContainer = document.querySelector('#content');
 
@@ -930,7 +1153,7 @@ var setup = function setup(csrfValue) {
   logoutNavButton = document.querySelector('#navbar-logout');
 
   // Setting the event handlers
-  SetButtonListener(newEntryNavButton, GetEditHistoryFunc('/entry/7E12ABD9898'));
+  SetButtonListener(newEntryNavButton, GetEditHistoryFunc('/add_entry'));
   SetButtonListener(addMemberNavButton, GetEditHistoryFunc('/add_member'));
   SetButtonListener(catalogNavButton, GetEditHistoryFunc('/catalog'));
   SetButtonListener(memberListNavButton, GetEditHistoryFunc('/members'));
@@ -942,5 +1165,5 @@ var setup = function setup(csrfValue) {
 
 // window.onload()
 window.addEventListener('load', function () {
-  GetToken(setup);
+  setup();
 });
