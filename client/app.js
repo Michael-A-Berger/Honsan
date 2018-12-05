@@ -17,12 +17,20 @@ let catalogNavButton = {};
 let memberListNavButton = {};
 let logoutNavButton = {};
 let reactContainer = {};
+let lastResultsID = '';
+let lastResultsTimeout = -1;
 
 // Global methods
-let FillContentByPathName = () => {}; // dummy, created later
+let FillContentByPathName = () => {}; // dummy, defined later
 
 // Constants
 const navbarSelectedClass = 'navbar-selected';
+const addEntryPath = '/add_entry';
+const addMemberPath = '/add_member';
+const catalogPath = '/catalog';
+const membersPath = '/members';
+const logoutPath = '/logout';
+const resultsTimer = 4000;
 
 // ::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
 //  HELPER METHODS
@@ -46,14 +54,209 @@ const EditHistory = (pathname) => {
 // GetEditHistoryFunc()
 const GetEditHistoryFunc = path => EditHistory.bind(this, path);
 
+// FillResultsDiv()
+const FillResultsDiv = (htmlID, message, timeout) => {
+  // Clearing out the previous timeout (if one exists + if timeout divs are the same)
+  if (lastResultsTimeout !== -1 && htmlID === lastResultsID) {
+    clearTimeout(lastResultsTimeout);
+    lastResultsTimeout = -1;
+  }
+
+  // Getting the results div
+  const resultsDiv = document.querySelector(htmlID);
+
+  // Showing the message
+  resultsDiv.innerHTML = `<p>${message}</p>`;
+
+  // IF the message should be timed out...
+  if (timeout) {
+    lastResultsID = htmlID;
+    lastResultsTimeout = setTimeout(() => {
+      resultsDiv.innerHTML = '';
+    }, resultsTimer);
+  }
+};
+
+// ::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
+//  API METHODS
+// ::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
+
+// AddEntry()
+const AddEntry = (e) => {
+  // Preventing default behavior
+  e.preventDefault();
+
+  // Serializing the Add Entry form
+  const addEntryForm = document.querySelector('#entry-form');
+  const serializedForm = SerializeForm(addEntryForm);
+
+  // Adding the Entry
+  SendAJAX('POST', '/make_entry', serializedForm, (data) => {
+    // IF there was an error, say so
+    if (data.error) {
+      FillResultsDiv('#entry-results', `<b>ERROR:</b> ${data.error}`, false);
+    // ELSE... (there was no error)
+    } else {
+      // Reloading the current app page
+      FillContentByPathName(null);
+
+      // Resetting the for to its default values
+      addEntryForm.reset();
+
+      // IF there was a response message, show it
+      if (data.message) {
+        FillResultsDiv('#entry-results', `${data.message}`, true);
+      }
+    }
+  });
+
+  // Preventing default behavior (again)
+  return false;
+};
+
+// AddCopy()
+const AddCopy = (e) => {
+  // Preventing default behavior
+  e.preventDefault();
+
+  // Serializing the Add Copy form
+  const addCopyForm = document.querySelector('#copy-form');
+  const serializedForm = SerializeForm(addCopyForm);
+
+  // Adding the Copy
+  SendAJAX('POST', '/make_copy', serializedForm, (data) => {
+    // IF there was an error, say so
+    if (data.error) {
+      FillResultsDiv('#copy-results', `<b>ERROR:</b> ${data.error}`, false);
+    // ELSE... (there was no error)
+    } else {
+      // Reloading the current app page
+      FillContentByPathName(null);
+
+      // Resetting the for to its default values
+      addCopyForm.reset();
+
+      // IF there was a response message, show it
+      if (data.message) {
+        FillResultsDiv('#copy-results', `${data.message}`, true);
+      }
+    }
+  });
+
+  // Preventing default behavior (again)
+  return false;
+};
+
+// AddMember()
+const AddMember = (e) => {
+  // Preventing default behavior
+  e.preventDefault();
+
+  // Serializing the Add Member form
+  const addMemberForm = document.querySelector('#member-form');
+  const serializedForm = SerializeForm(addMemberForm);
+
+  // Adding the Member
+  SendAJAX('POST', '/make_member', serializedForm, (data) => {
+    // IF there was an error, say so
+    if (data.error) {
+      FillResultsDiv('#member-results', `<b>ERROR:</b> ${data.error}`, false);
+    // ELSE... (there was no error)
+    } else {
+      // Reloading the current app page
+      FillContentByPathName(null);
+
+      // Resetting the for to its default values
+      addMemberForm.reset();
+
+      // IF there was a response message, show it
+      if (data.message) {
+        FillResultsDiv('#member-results', `${data.message}`, true);
+      }
+    }
+  });
+
+  // Preventing default behavior (again)
+  return false;
+};
+
+// SignOutByNickname
+const SignOutByNickname = (e) => {
+  // Preventing default behavior
+  e.preventDefault();
+
+  // Serializing the Signout Nickname form
+  const signoutNicknameForm = document.querySelector('#signout-nickname-form');
+  const serializedForm = SerializeForm(signoutNicknameForm);
+
+  // Singing out the Copy
+  SendAJAX('POST', '/signout_nickname', serializedForm, (data) => {
+    // IF there was an error, say so
+    if (data.error) {
+      FillResultsDiv('#signout-nickname-results', `<b>ERROR:</b> ${data.error}`, false);
+    // ELSE... (there was no error)
+    } else {
+      // Reloading the current app page
+      FillContentByPathName(null);
+
+      // Resetting the for to its default values
+      signoutNicknameForm.reset();
+
+      // IF there was a response message, show it
+      if (data.message) {
+        FillResultsDiv('#signout-nickname-results', `${data.message}`, true);
+      }
+    }
+  });
+
+  // Preventing default behavior (again)
+  return false;
+};
+
 // SignInCopy()
-const SignInCopy = () => {
-  // PLACEHOLDER
+const SignInCopy = (copyId, csrfToken) => {
+  // Creating the POST string
+  const dataStr = `_csrf=${csrfToken}&copyId=${copyId}`;
+
+  // Signing in the copy
+  SendAJAX('POST', '/signin_copy', dataStr, (data) => {
+    // IF there was an error, say so
+    if (data.error) {
+      FillResultsDiv('#signin-results', `<b>ERROR:</b> ${data.error}`, false);
+    // ELSE... (there was no error)
+    } else {
+      // Reloading the curret app page
+      FillContentByPathName(null);
+
+      // IF there was a response message, show it
+      if (data.message) {
+        FillResultsDiv('#signin-results', `${data.message}`, true);
+      }
+    }
+  });
 };
 
 // RenewCopy()
-const RenewCopy = () => {
-  // PLACEHOLDER
+const RenewCopy = (copyId, csrfToken) => {
+  // Creating the POST string
+  const dataStr = `_csrf=${csrfToken}&copyId=${copyId}`;
+
+  // Renewing the copy
+  SendAJAX('POST', '/renew_copy', dataStr, (data) => {
+    // IF there was an error, say so
+    if (data.error) {
+      FillResultsDiv('#signin-results', `<b>ERROR:</b> ${data.error}`, false);
+    // ELSE... (there was no error)
+    } else {
+      // Reloading the current app page
+      FillContentByPathName(null);
+
+      // IF there was a response message, show it
+      if (data.message) {
+        FillResultsDiv('#signin-results', `${data.message}`, true);
+      }
+    }
+  });
 };
 
 // ::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
@@ -93,7 +296,8 @@ const AddEntryReact = (props) => {
             <input id='entry-trn-name' type='text' name='trnName' placeholder='trn. name' />
           </label>
           <h3>Description:</h3>
-          <textarea id='entry-description' form='entry-form' rows='6' cols='45' name='description' placeholder='description'></textarea>
+          <textarea id='entry-description' form='entry-form' rows='6' cols='45' name='description'
+            placeholder='description'></textarea>
           <label htmlFor='genres'>Genres:
             <input id='entry-genres' type='text' name='genres' placeholder='ex; action, adventure' />
           </label>
@@ -109,7 +313,7 @@ const AddEntryReact = (props) => {
           </label>
           <input type='hidden' name='_csrf' value={props.csrfToken} />
           <label className='form-required'>* Required</label>
-          <input className='entry-submit' type='submit' value='Add to Catalogue' />
+          <input className='entry-submit' type='submit' onClick={AddEntry} value='Add to Catalogue' />
         </form>
         <div id='entry-results'></div>
       </div>
@@ -144,7 +348,7 @@ const AddMemberReact = (props) => {
           </label>
           <input type='hidden' name='_csrf' value={props.csrfToken} />
           <label className='form-required'>* Required</label>
-          <input className='member-submit' type='submit' value='Add Member'/>
+          <input className='member-submit' type='submit' onClick={AddMember} value='Add Member'/>
         </form>
         <div id='member-results'></div>
       </div>
@@ -256,7 +460,7 @@ const EntryReact = (props) => {
                 <h3>Description:</h3>
                 <textarea className='copy-description' form='copy-form' name='description' placeholder='description'></textarea>
                 <input type='hidden' name='_csrf' value={props.csrfToken} />
-                <input className='copy-submit' type='submit' value='Add Copy' />
+                <input className='copy-submit' type='submit' onClick={AddCopy} value='Add Copy' />
               </form>
           </div>
           <div id='copy-results'></div>
@@ -302,6 +506,12 @@ const MemberBorrowedTableReact = (props) => {
       };
       const entryLink = <a href='' onClick={toEntryFunc}>{props.borrowed[num].entryName}</a>;
 
+      // Creating the Sign In + Renew buttons
+      const bindedSignIn = SignInCopy.bind(this, props.borrowed[num].copyId, props.csrfToken);
+      const bindedRenew = RenewCopy.bind(this, props.borrowed[num].copyId, props.csrfToken);
+      const signinButton = <button type='button' onClick={bindedSignIn}>Sign In</button>;
+      const renewButton = <button type='buton' onClick={bindedRenew}>Renew</button>;
+
       // Creating the table row React
       tableRows.push(
         <tr>
@@ -310,8 +520,8 @@ const MemberBorrowedTableReact = (props) => {
           <td>{props.borrowed[num].nickname}</td>
           <td>{props.borrowed[num].quality}</td>
           <td>{props.borrowed[num].dueDateStr}</td>
-          <td>(Renewal Button)</td>
-          <td>(Sign In Button)</td>
+          <td>{renewButton}</td>
+          <td>{signinButton}</td>
         </tr>,
       );
     }
@@ -347,7 +557,8 @@ const MemberReact = (props) => {
           <p><b>Cards:</b> {cardsStr}</p>
           <div className='borrowed-container'>
             <h2>Borrowed Items:</h2>
-            <MemberBorrowedTableReact borrowed={props.member.borrowed} />
+            <MemberBorrowedTableReact borrowed={props.member.borrowed}
+              csrfToken={props.csrfToken} />
           </div>
           <div id='signin-results'></div>
           <div id='signout-nickname-container'>
@@ -360,7 +571,7 @@ const MemberReact = (props) => {
               </label>
               <input className='signout-nickname-member' type='hidden' name='memberId' value={props.member.memberId} />
               <input type='hidden' name='_csrf' value={props.csrfToken} />
-              <input className='signout-nickname-submit' type='submit' value='Sign Out Copy' />
+              <input className='signout-nickname-submit' type='submit' onClick={SignOutByNickname} value='Sign Out Copy' />
             </form>
             <div id='signout-nickname-results'></div>
           </div>
@@ -492,7 +703,7 @@ FillContentByPathName = () => {
   const path = window.location.pathname;
 
   // IF the path name is just the app homepage (catalog)...
-  if (path === '/app' || path === '/catalog') {
+  if (path === '/app' || path === catalogPath) {
     SendAJAX('GET', '/get_catalog', null, (response) => {
       ReactDOM.render(<CatalogReact entries={response.entries} />,
         reactContainer);
@@ -502,7 +713,7 @@ FillContentByPathName = () => {
   }
 
   // IF the path name is the Member list...
-  if (path === '/members') {
+  if (path === membersPath) {
     SendAJAX('Get', '/get_members', null, (response) => {
       ReactDOM.render(<MembersListReact members={response.members} />, reactContainer);
     });
@@ -531,7 +742,7 @@ FillContentByPathName = () => {
   }
 
   // IF the path name is to add an Entry...
-  if (path === '/add_entry') {
+  if (path === addEntryPath) {
     GetToken((csrfValue) => {
       ReactDOM.render(<AddEntryReact csrfToken={csrfValue} />, reactContainer);
     });
@@ -540,7 +751,7 @@ FillContentByPathName = () => {
   }
 
   // IF the path name is to add a Member...
-  if (path === '/add_member') {
+  if (path === addMemberPath) {
     GetToken((csrfValue) => {
       ReactDOM.render(<AddMemberReact csrfToken={csrfValue} />, reactContainer);
     });
@@ -549,9 +760,10 @@ FillContentByPathName = () => {
   }
 
   // IF the path name is to log out...
-  if (path === '/logout') {
+  if (path === logoutPath) {
     ReactDOM.render(<div><h2>Logging out...</h2></div>, reactContainer);
     logoutNavButton.classList.add(navbarSelectedClass);
+    window.location.href = '/logout';
     return;
   }
 
@@ -574,11 +786,11 @@ const setup = () => {
   logoutNavButton = document.querySelector('#navbar-logout');
 
   // Setting the event handlers
-  SetButtonListener(newEntryNavButton, GetEditHistoryFunc('/add_entry'));
-  SetButtonListener(addMemberNavButton, GetEditHistoryFunc('/add_member'));
-  SetButtonListener(catalogNavButton, GetEditHistoryFunc('/catalog'));
-  SetButtonListener(memberListNavButton, GetEditHistoryFunc('/members'));
-  SetButtonListener(logoutNavButton, GetEditHistoryFunc('/logout'));
+  SetButtonListener(newEntryNavButton, GetEditHistoryFunc(addEntryPath));
+  SetButtonListener(addMemberNavButton, GetEditHistoryFunc(addMemberPath));
+  SetButtonListener(catalogNavButton, GetEditHistoryFunc(catalogPath));
+  SetButtonListener(memberListNavButton, GetEditHistoryFunc(membersPath));
+  SetButtonListener(logoutNavButton, GetEditHistoryFunc(logoutPath));
 
   // Deciding what to do with URL
   FillContentByPathName(null);

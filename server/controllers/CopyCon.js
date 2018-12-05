@@ -194,7 +194,7 @@ const RenewByID = (request, rp) => {
         console.log(error2);
         return models.UnexpectedServerError(rq, rp);
       }
-      console.log(`- [${docCopy.entry_name}] [${docCopy.name}] sign out renewed at [${models.CurrentTime()}]`);
+      console.log(`- [${docCopy.entry_name}] [${docCopy.name}] renewed at [${models.CurrentTime()}]`);
       return rp.json({ message: `${docCopy.entry_name} ${docCopy.name} was renewed!` });
     });
   });

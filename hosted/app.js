@@ -19,12 +19,20 @@ var catalogNavButton = {};
 var memberListNavButton = {};
 var logoutNavButton = {};
 var reactContainer = {};
+var lastResultsID = '';
+var lastResultsTimeout = -1;
 
 // Global methods
-var FillContentByPathName = function FillContentByPathName() {}; // dummy, created later
+var FillContentByPathName = function FillContentByPathName() {}; // dummy, defined later
 
 // Constants
 var navbarSelectedClass = 'navbar-selected';
+var addEntryPath = '/add_entry';
+var addMemberPath = '/add_member';
+var catalogPath = '/catalog';
+var membersPath = '/members';
+var logoutPath = '/logout';
+var resultsTimer = 4000;
 
 // ::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
 //  HELPER METHODS
@@ -50,14 +58,209 @@ var GetEditHistoryFunc = function GetEditHistoryFunc(path) {
   return EditHistory.bind(undefined, path);
 };
 
+// FillResultsDiv()
+var FillResultsDiv = function FillResultsDiv(htmlID, message, timeout) {
+  // Clearing out the previous timeout (if one exists + if timeout divs are the same)
+  if (lastResultsTimeout !== -1 && htmlID === lastResultsID) {
+    clearTimeout(lastResultsTimeout);
+    lastResultsTimeout = -1;
+  }
+
+  // Getting the results div
+  var resultsDiv = document.querySelector(htmlID);
+
+  // Showing the message
+  resultsDiv.innerHTML = '<p>' + message + '</p>';
+
+  // IF the message should be timed out...
+  if (timeout) {
+    lastResultsID = htmlID;
+    lastResultsTimeout = setTimeout(function () {
+      resultsDiv.innerHTML = '';
+    }, resultsTimer);
+  }
+};
+
+// ::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
+//  API METHODS
+// ::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
+
+// AddEntry()
+var AddEntry = function AddEntry(e) {
+  // Preventing default behavior
+  e.preventDefault();
+
+  // Serializing the Add Entry form
+  var addEntryForm = document.querySelector('#entry-form');
+  var serializedForm = SerializeForm(addEntryForm);
+
+  // Adding the Entry
+  SendAJAX('POST', '/make_entry', serializedForm, function (data) {
+    // IF there was an error, say so
+    if (data.error) {
+      FillResultsDiv('#entry-results', '<b>ERROR:</b> ' + data.error, false);
+      // ELSE... (there was no error)
+    } else {
+      // Reloading the current app page
+      FillContentByPathName(null);
+
+      // Resetting the for to its default values
+      addEntryForm.reset();
+
+      // IF there was a response message, show it
+      if (data.message) {
+        FillResultsDiv('#entry-results', '' + data.message, true);
+      }
+    }
+  });
+
+  // Preventing default behavior (again)
+  return false;
+};
+
+// AddCopy()
+var AddCopy = function AddCopy(e) {
+  // Preventing default behavior
+  e.preventDefault();
+
+  // Serializing the Add Copy form
+  var addCopyForm = document.querySelector('#copy-form');
+  var serializedForm = SerializeForm(addCopyForm);
+
+  // Adding the Copy
+  SendAJAX('POST', '/make_copy', serializedForm, function (data) {
+    // IF there was an error, say so
+    if (data.error) {
+      FillResultsDiv('#copy-results', '<b>ERROR:</b> ' + data.error, false);
+      // ELSE... (there was no error)
+    } else {
+      // Reloading the current app page
+      FillContentByPathName(null);
+
+      // Resetting the for to its default values
+      addCopyForm.reset();
+
+      // IF there was a response message, show it
+      if (data.message) {
+        FillResultsDiv('#copy-results', '' + data.message, true);
+      }
+    }
+  });
+
+  // Preventing default behavior (again)
+  return false;
+};
+
+// AddMember()
+var AddMember = function AddMember(e) {
+  // Preventing default behavior
+  e.preventDefault();
+
+  // Serializing the Add Member form
+  var addMemberForm = document.querySelector('#member-form');
+  var serializedForm = SerializeForm(addMemberForm);
+
+  // Adding the Member
+  SendAJAX('POST', '/make_member', serializedForm, function (data) {
+    // IF there was an error, say so
+    if (data.error) {
+      FillResultsDiv('#member-results', '<b>ERROR:</b> ' + data.error, false);
+      // ELSE... (there was no error)
+    } else {
+      // Reloading the current app page
+      FillContentByPathName(null);
+
+      // Resetting the for to its default values
+      addMemberForm.reset();
+
+      // IF there was a response message, show it
+      if (data.message) {
+        FillResultsDiv('#member-results', '' + data.message, true);
+      }
+    }
+  });
+
+  // Preventing default behavior (again)
+  return false;
+};
+
+// SignOutByNickname
+var SignOutByNickname = function SignOutByNickname(e) {
+  // Preventing default behavior
+  e.preventDefault();
+
+  // Serializing the Signout Nickname form
+  var signoutNicknameForm = document.querySelector('#signout-nickname-form');
+  var serializedForm = SerializeForm(signoutNicknameForm);
+
+  // Singing out the Copy
+  SendAJAX('POST', '/signout_nickname', serializedForm, function (data) {
+    // IF there was an error, say so
+    if (data.error) {
+      FillResultsDiv('#signout-nickname-results', '<b>ERROR:</b> ' + data.error, false);
+      // ELSE... (there was no error)
+    } else {
+      // Reloading the current app page
+      FillContentByPathName(null);
+
+      // Resetting the for to its default values
+      signoutNicknameForm.reset();
+
+      // IF there was a response message, show it
+      if (data.message) {
+        FillResultsDiv('#signout-nickname-results', '' + data.message, true);
+      }
+    }
+  });
+
+  // Preventing default behavior (again)
+  return false;
+};
+
 // SignInCopy()
-var SignInCopy = function SignInCopy() {
-  // PLACEHOLDER
+var SignInCopy = function SignInCopy(copyId, csrfToken) {
+  // Creating the POST string
+  var dataStr = '_csrf=' + csrfToken + '&copyId=' + copyId;
+
+  // Signing in the copy
+  SendAJAX('POST', '/signin_copy', dataStr, function (data) {
+    // IF there was an error, say so
+    if (data.error) {
+      FillResultsDiv('#signin-results', '<b>ERROR:</b> ' + data.error, false);
+      // ELSE... (there was no error)
+    } else {
+      // Reloading the curret app page
+      FillContentByPathName(null);
+
+      // IF there was a response message, show it
+      if (data.message) {
+        FillResultsDiv('#signin-results', '' + data.message, true);
+      }
+    }
+  });
 };
 
 // RenewCopy()
-var RenewCopy = function RenewCopy() {
-  // PLACEHOLDER
+var RenewCopy = function RenewCopy(copyId, csrfToken) {
+  // Creating the POST string
+  var dataStr = '_csrf=' + csrfToken + '&copyId=' + copyId;
+
+  // Renewing the copy
+  SendAJAX('POST', '/renew_copy', dataStr, function (data) {
+    // IF there was an error, say so
+    if (data.error) {
+      FillResultsDiv('#signin-results', '<b>ERROR:</b> ' + data.error, false);
+      // ELSE... (there was no error)
+    } else {
+      // Reloading the current app page
+      FillContentByPathName(null);
+
+      // IF there was a response message, show it
+      if (data.message) {
+        FillResultsDiv('#signin-results', '' + data.message, true);
+      }
+    }
+  });
 };
 
 // ::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
@@ -144,7 +347,8 @@ var AddEntryReact = function AddEntryReact(props) {
           null,
           'Description:'
         ),
-        React.createElement('textarea', { id: 'entry-description', form: 'entry-form', rows: '6', cols: '45', name: 'description', placeholder: 'description' }),
+        React.createElement('textarea', { id: 'entry-description', form: 'entry-form', rows: '6', cols: '45', name: 'description',
+          placeholder: 'description' }),
         React.createElement(
           'label',
           { htmlFor: 'genres' },
@@ -187,7 +391,7 @@ var AddEntryReact = function AddEntryReact(props) {
           { className: 'form-required' },
           '* Required'
         ),
-        React.createElement('input', { className: 'entry-submit', type: 'submit', value: 'Add to Catalogue' })
+        React.createElement('input', { className: 'entry-submit', type: 'submit', onClick: AddEntry, value: 'Add to Catalogue' })
       ),
       React.createElement('div', { id: 'entry-results' })
     )
@@ -261,7 +465,7 @@ var AddMemberReact = function AddMemberReact(props) {
           { className: 'form-required' },
           '* Required'
         ),
-        React.createElement('input', { className: 'member-submit', type: 'submit', value: 'Add Member' })
+        React.createElement('input', { className: 'member-submit', type: 'submit', onClick: AddMember, value: 'Add Member' })
       ),
       React.createElement('div', { id: 'member-results' })
     )
@@ -560,7 +764,7 @@ var EntryReact = function EntryReact(props) {
             ),
             React.createElement('textarea', { className: 'copy-description', form: 'copy-form', name: 'description', placeholder: 'description' }),
             React.createElement('input', { type: 'hidden', name: '_csrf', value: props.csrfToken }),
-            React.createElement('input', { className: 'copy-submit', type: 'submit', value: 'Add Copy' })
+            React.createElement('input', { className: 'copy-submit', type: 'submit', onClick: AddCopy, value: 'Add Copy' })
           )
         ),
         React.createElement('div', { id: 'copy-results' })
@@ -634,6 +838,20 @@ var MemberBorrowedTableReact = function MemberBorrowedTableReact(props) {
         props.borrowed[num].entryName
       );
 
+      // Creating the Sign In + Renew buttons
+      var bindedSignIn = SignInCopy.bind(undefined, props.borrowed[num].copyId, props.csrfToken);
+      var bindedRenew = RenewCopy.bind(undefined, props.borrowed[num].copyId, props.csrfToken);
+      var signinButton = React.createElement(
+        'button',
+        { type: 'button', onClick: bindedSignIn },
+        'Sign In'
+      );
+      var renewButton = React.createElement(
+        'button',
+        { type: 'buton', onClick: bindedRenew },
+        'Renew'
+      );
+
       // Creating the table row React
       tableRows.push(React.createElement(
         'tr',
@@ -666,12 +884,12 @@ var MemberBorrowedTableReact = function MemberBorrowedTableReact(props) {
         React.createElement(
           'td',
           null,
-          '(Renewal Button)'
+          renewButton
         ),
         React.createElement(
           'td',
           null,
-          '(Sign In Button)'
+          signinButton
         )
       ));
     };
@@ -759,7 +977,8 @@ var MemberReact = function MemberReact(props) {
             null,
             'Borrowed Items:'
           ),
-          React.createElement(MemberBorrowedTableReact, { borrowed: props.member.borrowed })
+          React.createElement(MemberBorrowedTableReact, { borrowed: props.member.borrowed,
+            csrfToken: props.csrfToken })
         ),
         React.createElement('div', { id: 'signin-results' }),
         React.createElement(
@@ -783,7 +1002,7 @@ var MemberReact = function MemberReact(props) {
             ),
             React.createElement('input', { className: 'signout-nickname-member', type: 'hidden', name: 'memberId', value: props.member.memberId }),
             React.createElement('input', { type: 'hidden', name: '_csrf', value: props.csrfToken }),
-            React.createElement('input', { className: 'signout-nickname-submit', type: 'submit', value: 'Sign Out Copy' })
+            React.createElement('input', { className: 'signout-nickname-submit', type: 'submit', onClick: SignOutByNickname, value: 'Sign Out Copy' })
           ),
           React.createElement('div', { id: 'signout-nickname-results' })
         ),
@@ -1058,7 +1277,7 @@ FillContentByPathName = function FillContentByPathName() {
   var path = window.location.pathname;
 
   // IF the path name is just the app homepage (catalog)...
-  if (path === '/app' || path === '/catalog') {
+  if (path === '/app' || path === catalogPath) {
     SendAJAX('GET', '/get_catalog', null, function (response) {
       ReactDOM.render(React.createElement(CatalogReact, { entries: response.entries }), reactContainer);
     });
@@ -1067,7 +1286,7 @@ FillContentByPathName = function FillContentByPathName() {
   }
 
   // IF the path name is the Member list...
-  if (path === '/members') {
+  if (path === membersPath) {
     SendAJAX('Get', '/get_members', null, function (response) {
       ReactDOM.render(React.createElement(MembersListReact, { members: response.members }), reactContainer);
     });
@@ -1094,7 +1313,7 @@ FillContentByPathName = function FillContentByPathName() {
   }
 
   // IF the path name is to add an Entry...
-  if (path === '/add_entry') {
+  if (path === addEntryPath) {
     GetToken(function (csrfValue) {
       ReactDOM.render(React.createElement(AddEntryReact, { csrfToken: csrfValue }), reactContainer);
     });
@@ -1103,7 +1322,7 @@ FillContentByPathName = function FillContentByPathName() {
   }
 
   // IF the path name is to add a Member...
-  if (path === '/add_member') {
+  if (path === addMemberPath) {
     GetToken(function (csrfValue) {
       ReactDOM.render(React.createElement(AddMemberReact, { csrfToken: csrfValue }), reactContainer);
     });
@@ -1112,7 +1331,7 @@ FillContentByPathName = function FillContentByPathName() {
   }
 
   // IF the path name is to log out...
-  if (path === '/logout') {
+  if (path === logoutPath) {
     ReactDOM.render(React.createElement(
       'div',
       null,
@@ -1123,6 +1342,7 @@ FillContentByPathName = function FillContentByPathName() {
       )
     ), reactContainer);
     logoutNavButton.classList.add(navbarSelectedClass);
+    window.location.href = '/logout';
     return;
   }
 
@@ -1153,11 +1373,11 @@ var setup = function setup() {
   logoutNavButton = document.querySelector('#navbar-logout');
 
   // Setting the event handlers
-  SetButtonListener(newEntryNavButton, GetEditHistoryFunc('/add_entry'));
-  SetButtonListener(addMemberNavButton, GetEditHistoryFunc('/add_member'));
-  SetButtonListener(catalogNavButton, GetEditHistoryFunc('/catalog'));
-  SetButtonListener(memberListNavButton, GetEditHistoryFunc('/members'));
-  SetButtonListener(logoutNavButton, GetEditHistoryFunc('/logout'));
+  SetButtonListener(newEntryNavButton, GetEditHistoryFunc(addEntryPath));
+  SetButtonListener(addMemberNavButton, GetEditHistoryFunc(addMemberPath));
+  SetButtonListener(catalogNavButton, GetEditHistoryFunc(catalogPath));
+  SetButtonListener(memberListNavButton, GetEditHistoryFunc(membersPath));
+  SetButtonListener(logoutNavButton, GetEditHistoryFunc(logoutPath));
 
   // Deciding what to do with URL
   FillContentByPathName(null);
