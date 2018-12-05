@@ -50,6 +50,17 @@ MemberSchema.statics.ToAPI = doc => ({
   last_name: doc.lastName,
   email: doc.email,
   cards: doc.cards,
+  // [ added_date ] is not defined until Member is registered
+});
+
+// ToFrontEnd()
+MemberSchema.statics.ToFrontEnd = doc => ({
+  memberId: doc.member_id,
+  firstName: doc.first_name,
+  lastName: doc.last_name,
+  email: doc.email,
+  cards: doc.cards,
+  addedDate: doc.added_date,
 });
 
 // SelectString()

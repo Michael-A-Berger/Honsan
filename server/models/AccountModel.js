@@ -53,6 +53,7 @@ AccountSchema.statics.ToAPI = doc => ({
   salt: doc.salt,
   password: doc.password,
   avatar: doc.avatar,
+  // [ added_date ] is not defined until Account is registered
 });
 
 // FormatForSession()
@@ -61,6 +62,14 @@ AccountSchema.statics.FormatForSession = doc => ({
   username: doc.username,
   avatar: doc.avatar,
   _id: doc._id,
+});
+
+// ToFrontEnd()
+AccountSchema.statics.ToFrontEnd = doc => ({
+  accountId: doc.account_id,
+  username: doc.username,
+  avatar: doc.avatar,
+  addedDate: doc.added_date,
 });
 
 // GenerateHash()

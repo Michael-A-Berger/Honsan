@@ -7,7 +7,7 @@ const SendAJAX = (httpMethod, action, postData, callback) => {
   const xhr = new XMLHttpRequest();
   xhr.onreadystatechange = () => {
     if (xhr.readyState === 4) {
-      // console.log(xhttp.responseText);
+      // console.log(xhr.responseText);
       callback(JSON.parse(xhr.responseText));
     }
   };

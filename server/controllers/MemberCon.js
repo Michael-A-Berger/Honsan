@@ -62,6 +62,59 @@ const GetMemberListPage = (rq, rp) => {
   return v;
 };
 
+// GetMember()
+const GetMember = (rq, rp) => {
+  // Searching for the specificed member
+  const v = _Member.Model.GetByID(rq.query.id, (error1, docMember) => {
+    // IF something went wrong, say so
+    if (error1) {
+      console.log(error1);
+      return models.UnexpectedServerError(rq, rp);
+    }
+
+    // IF the Member doesn't exist...
+    if (docMember === null || docMember === undefined) {
+      return rp.json({
+        member: null,
+        csrfToken: null,
+      });
+    }
+
+    // Getting the Member's borrowed Copies
+    return _Copy.Model.GetAllBorrowedByMember(docMember.member_id, (error2, docBorrowed) => {
+      // IF there was an error, say so
+      if (error2) {
+        console.log(error2);
+        return models.UnexpectedServerError(rq, rp);
+      }
+
+      // Setting the Member to an assignable object
+      const currentMember = _Member.Model.ToFrontEnd(docMember);
+
+      // IF books are borrowed, add them to the returned member
+      if (docBorrowed.length > 0) {
+        let dueDate = '';
+        const borrowedCopies = [];
+        for (let num = 0; num < docBorrowed.length; num++) {
+          borrowedCopies[num] = _Copy.Model.ToFrontEnd(docBorrowed[num]);
+          dueDate = models.DayFromDate(docBorrowed[num].due_date);
+          borrowedCopies[num].dueDateStr = dueDate;
+        }
+        currentMember.borrowed = borrowedCopies;
+      }
+
+      // Sending the Member page
+      return rp.json({
+        member: currentMember,
+        csrfToken: rq.csrfToken(),
+      });
+    });
+  });
+
+  // Returning the dummy variables
+  return v;
+};
+
 // GetMemberPage()
 const GetMemberPage = (rq, rp) => {
   const v = _Member.Model.GetByID(rq.query.id, (error1, docMember) => {
@@ -109,10 +162,32 @@ const GetMemberPage = (rq, rp) => {
   return v;
 };
 
+// GetMembers()
+const GetMembers = (rq, rp) => {
+  // Getting the Members from the database
+  const v = _Member.Model.GetAll((error, docs) => {
+    if (error) {
+      console.log(error);
+      return models.UnexpectedServerError(rq, rp);
+    }
+
+    // Formatting the Members for the Front End
+    const currentMembers = [];
+    for (let num = 0; num < docs.length; num++) {
+      currentMembers.push(_Member.Model.ToFrontEnd(docs[num]));
+    }
+
+    return rp.json({ members: currentMembers });
+  });
+  return v;
+};
+
 // Defining the exports
 module.exports = {
   MakeMember,
   GetAddMemberPage,
   GetMemberListPage,
+  GetMember,
   GetMemberPage,
+  GetMembers,
 };

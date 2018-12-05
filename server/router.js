@@ -41,9 +41,26 @@ const router = (app) => {
   app.get('/app',
     middleware.RequiresLogin,
     controllers.Account.GetAppPage);
-  app.get('/entry/:entry_id',
+  app.get('/:whatever/:whatever2',
     middleware.RequiresLogin,
     controllers.Account.GetAppPage);
+  app.get('/:whatever/:whatever2/:whatever3',
+    middleware.RequiresLogin,
+    controllers.Account.GetAppPage);
+
+  // NEW XHR GETS
+  app.get('/get_entry',
+    middleware.RequiresLogin,
+    controllers.Entry.GetEntry);
+  app.get('/get_member',
+    middleware.RequiresLogin,
+    controllers.Member.GetMember);
+  app.get('/get_catalog',
+    middleware.RequiresLogin,
+    controllers.Entry.GetCatalog);
+  app.get('/get_members',
+    middleware.RequiresLogin,
+    controllers.Member.GetMembers);
 
   // POST
   app.post('/make_entry',

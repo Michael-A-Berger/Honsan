@@ -20,8 +20,15 @@ var memberListNavButton = {};
 var logoutNavButton = {};
 var reactContainer = {};
 
+// Global methods
+var FillContentByPathName = function FillContentByPathName() {}; // dummy, created later
+
 // Constants
 var navbarSelectedClass = 'navbar-selected';
+
+// ::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
+//  HELPER METHODS
+// ::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
 
 // SetEventListener()
 var SetButtonListener = function SetButtonListener(button, func) {
@@ -32,16 +39,800 @@ var SetButtonListener = function SetButtonListener(button, func) {
   });
 };
 
+// EditHistory()
+var EditHistory = function EditHistory(pathname) {
+  window.history.pushState(null, 'Honsan', pathname);
+  FillContentByPathName(null);
+};
+
+// GetEditHistoryFunc()
+var GetEditHistoryFunc = function GetEditHistoryFunc(path) {
+  return EditHistory.bind(undefined, path);
+};
+
+// SignInCopy()
+var SignInCopy = function SignInCopy() {
+  // PLACEHOLDER
+};
+
+// RenewCopy()
+var RenewCopy = function RenewCopy() {
+  // PLACEHOLDER
+};
+
+// ::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
+//  REACT METHODS
+// ::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
+
+// EntryCopiesTableReact()
+var EntryCopiesTableReact = function EntryCopiesTableReact(props) {
+  // Creating the React Rows array to send back
+  var tableRows = [];
+
+  // Creating the header row
+  tableRows.push(React.createElement(
+    'tr',
+    null,
+    React.createElement(
+      'th',
+      null,
+      'Name'
+    ),
+    React.createElement(
+      'th',
+      null,
+      'Nickname'
+    ),
+    React.createElement(
+      'th',
+      null,
+      'Quality'
+    ),
+    React.createElement(
+      'th',
+      null,
+      'Description'
+    ),
+    React.createElement(
+      'th',
+      null,
+      'Signed Out?'
+    ),
+    React.createElement(
+      'th',
+      null,
+      'Due Date'
+    )
+  ));
+
+  // IF there are any copies...
+  if (props.copies && props.copies.length > 0) {
+    var _loop = function _loop(num) {
+      // Determining if a member has signed out the copy
+      var memberSignedOut = 'No';
+      var dueDate = '';
+      if (props.copies[num].borrower) {
+        // Creating the function for the Member link
+        var toMemberFunc = function toMemberFunc(e) {
+          e.preventDefault();
+          EditHistory('/member/' + props.copies[num].borrower);
+          return false;
+        };
+        memberSignedOut = React.createElement(
+          'a',
+          { href: '', onClick: toMemberFunc },
+          'Yes'
+        );
+        dueDate = '' + props.copies[num].dueDateStr;
+      }
+
+      // Creating the table row React
+      tableRows.push(React.createElement(
+        'tr',
+        null,
+        React.createElement(
+          'td',
+          null,
+          props.copies[num].name
+        ),
+        React.createElement(
+          'td',
+          null,
+          props.copies[num].nickname
+        ),
+        React.createElement(
+          'td',
+          null,
+          props.copies[num].quality
+        ),
+        React.createElement(
+          'td',
+          null,
+          props.copies[num].description
+        ),
+        React.createElement(
+          'td',
+          null,
+          memberSignedOut
+        ),
+        React.createElement(
+          'td',
+          null,
+          dueDate
+        )
+      ));
+    };
+
+    // FOR every copy, create a new table row
+    for (var num = 0; num < props.copies.length; num++) {
+      _loop(num);
+    }
+    // ELSE... (there are no copies)
+  } else {
+    tableRows.push(React.createElement(
+      'tr',
+      null,
+      React.createElement(
+        'td',
+        { colSpan: '6' },
+        'No copies created yet'
+      )
+    ));
+  }
+
+  // Returning the Copies table
+  return React.createElement(
+    'table',
+    null,
+    tableRows
+  );
+};
+
 // EntryReact()
 var EntryReact = function EntryReact(props) {
   // Defining the React to send back
   var returnReact = '';
+  console.dir(props);
 
-  //
+  // IF the entry ID exist...
+  if (props.entry) {
+    returnReact = React.createElement(
+      'div',
+      { id: 'entry-container' },
+      React.createElement(
+        'div',
+        { className: 'entry' },
+        React.createElement(
+          'h1',
+          null,
+          props.entry.engName
+        ),
+        React.createElement(
+          'p',
+          null,
+          React.createElement(
+            'b',
+            null,
+            'Jap. Name:'
+          ),
+          ' ',
+          props.entry.japName
+        ),
+        React.createElement(
+          'p',
+          null,
+          React.createElement(
+            'b',
+            null,
+            'Trn. Name:'
+          ),
+          ' ',
+          props.entry.trnName
+        ),
+        React.createElement(
+          'p',
+          null,
+          React.createElement(
+            'b',
+            null,
+            'Genres:'
+          ),
+          ' ',
+          props.entry.genres
+        ),
+        React.createElement(
+          'p',
+          null,
+          React.createElement(
+            'b',
+            null,
+            'Description:'
+          ),
+          ' ',
+          props.entry.description
+        ),
+        React.createElement(
+          'p',
+          null,
+          React.createElement(
+            'b',
+            null,
+            'Publisher:'
+          ),
+          ' ',
+          props.entry.publisher
+        ),
+        React.createElement(
+          'p',
+          null,
+          React.createElement(
+            'b',
+            null,
+            'Media Type:'
+          ),
+          ' ',
+          props.entry.mediaType
+        ),
+        React.createElement(
+          'div',
+          { className: 'copies-contrainer' },
+          React.createElement(
+            'h2',
+            null,
+            React.createElement(
+              'b',
+              null,
+              'Copies:'
+            )
+          ),
+          React.createElement(EntryCopiesTableReact, { copies: props.entry.copies })
+        ),
+        React.createElement(
+          'div',
+          { id: 'add-copies-container' },
+          React.createElement(
+            'h2',
+            null,
+            'Add Copy:'
+          ),
+          React.createElement(
+            'form',
+            { id: 'copy-form',
+              name: 'copy-form',
+              className: 'copy-form' },
+            React.createElement('input', { className: 'copy-entry-id', type: 'hidden', name: 'entryId', value: props.entry.entryId }),
+            React.createElement(
+              'label',
+              { htmlFor: 'name' },
+              'Name:',
+              React.createElement('input', { className: 'copy-name', type: 'text', name: 'name', placeholder: 'name' })
+            ),
+            React.createElement(
+              'label',
+              { htmlFor: 'nickname' },
+              'Nickname:',
+              React.createElement('input', { className: 'copy-nickname', type: 'text', name: 'nickname', placeholder: 'nickname' })
+            ),
+            React.createElement(
+              'label',
+              { htmlFor: 'quality' },
+              'Quality:',
+              React.createElement(
+                'select',
+                { name: 'quality' },
+                React.createElement(
+                  'option',
+                  { value: 'new' },
+                  'New'
+                ),
+                React.createElement(
+                  'option',
+                  { value: 'great' },
+                  'Great'
+                ),
+                React.createElement(
+                  'option',
+                  { value: 'decent', selected: true },
+                  'Decent'
+                ),
+                React.createElement(
+                  'option',
+                  { value: 'rough' },
+                  'Rough'
+                ),
+                React.createElement(
+                  'option',
+                  { value: 'poor' },
+                  'Poor'
+                )
+              )
+            ),
+            React.createElement(
+              'h3',
+              null,
+              'Description:'
+            ),
+            React.createElement('textarea', { className: 'copy-description', form: 'copy-form', name: 'description', placeholder: 'description' }),
+            React.createElement('input', { type: 'hidden', name: '_csrf', value: props.csrfToken }),
+            React.createElement('input', { className: 'copy-submit', type: 'submit', value: 'Add Copy' })
+          )
+        ),
+        React.createElement('div', { id: 'copy-results' })
+      )
+    );
+    // ELSE... (Entry ID is invalid)
+  } else {
+    returnReact = React.createElement(
+      'div',
+      { id: 'entry-container' },
+      React.createElement(
+        'h2',
+        null,
+        'Entry ID is not valid.'
+      )
+    );
+  }
 
   // Returning the React code
   return returnReact;
 };
+
+// MemberBorrowedTableReact()
+var MemberBorrowedTableReact = function MemberBorrowedTableReact(props) {
+  // Setting up the table rows to return
+  var tableRows = [];
+
+  // Creating the header row
+  tableRows.push(React.createElement(
+    'tr',
+    null,
+    React.createElement(
+      'th',
+      null,
+      'Entry'
+    ),
+    React.createElement(
+      'th',
+      null,
+      'Copy'
+    ),
+    React.createElement(
+      'th',
+      null,
+      'Quality'
+    ),
+    React.createElement(
+      'th',
+      null,
+      'Nickname'
+    ),
+    React.createElement(
+      'th',
+      null,
+      'Due Date'
+    )
+  ));
+
+  // IF there are any borrowed copies...
+  if (props.borrowed && props.borrowed.length > 0) {
+    var _loop2 = function _loop2(num) {
+      // Creaing the "To Entry" link function + React
+      var toEntryFunc = function toEntryFunc(e) {
+        e.preventDefault();
+        EditHistory('/entry/' + props.borrowed[num].entryId);
+        return false;
+      };
+      var entryLink = React.createElement(
+        'a',
+        { href: '', onClick: toEntryFunc },
+        props.borrowed[num].entryName
+      );
+
+      // Creating the table row React
+      tableRows.push(React.createElement(
+        'tr',
+        null,
+        React.createElement(
+          'td',
+          null,
+          entryLink
+        ),
+        React.createElement(
+          'td',
+          null,
+          props.borrowed[num].name
+        ),
+        React.createElement(
+          'td',
+          null,
+          props.borrowed[num].nickname
+        ),
+        React.createElement(
+          'td',
+          null,
+          props.borrowed[num].quality
+        ),
+        React.createElement(
+          'td',
+          null,
+          props.borrowed[num].dueDateStr
+        ),
+        React.createElement(
+          'td',
+          null,
+          '(Renewal Button)'
+        ),
+        React.createElement(
+          'td',
+          null,
+          '(Sign In Button)'
+        )
+      ));
+    };
+
+    // FOR every borrowed copy, create a new table row
+    for (var num = 0; num < props.borrowed.length; num++) {
+      _loop2(num);
+    }
+    // ELSE... (there are no borrowed copies)
+  } else {
+    tableRows.push(React.createElement(
+      'tr',
+      null,
+      React.createElement(
+        'td',
+        { colSpan: '5' },
+        'No borrowed items.'
+      )
+    ));
+  }
+
+  // Returning the table rows
+  return React.createElement(
+    'table',
+    null,
+    tableRows
+  );
+};
+
+// MemberReact()
+var MemberReact = function MemberReact(props) {
+  // Defining the react to send back
+  var returnReact = '';
+
+  // IF the member ID exists...
+  if (props.member) {
+    // Getting the cards string
+    var cardsStr = '';
+    for (var num = 0; num < props.member.cards.length; num++) {
+      cardsStr += props.member.cards[num];
+      if (num < props.member.cards.length - 1) cardsStr += ', ';
+    }
+
+    // Setting the React code
+    returnReact = React.createElement(
+      'div',
+      { id: 'member-container' },
+      React.createElement(
+        'div',
+        { className: 'member-entry' },
+        React.createElement(
+          'h1',
+          null,
+          props.member.firstName,
+          ' ',
+          props.member.lastName
+        ),
+        React.createElement(
+          'p',
+          null,
+          React.createElement(
+            'b',
+            null,
+            'Email:'
+          ),
+          ' ',
+          props.member.email
+        ),
+        React.createElement(
+          'p',
+          null,
+          React.createElement(
+            'b',
+            null,
+            'Cards:'
+          ),
+          ' ',
+          cardsStr
+        ),
+        React.createElement(
+          'div',
+          { className: 'borrowed-container' },
+          React.createElement(
+            'h2',
+            null,
+            'Borrowed Items:'
+          ),
+          React.createElement(MemberBorrowedTableReact, { borrowed: props.member.borrowed })
+        ),
+        React.createElement('div', { id: 'signin-results' }),
+        React.createElement(
+          'div',
+          { id: 'signout-nickname-container' },
+          React.createElement(
+            'h2',
+            null,
+            'Sign Out:'
+          ),
+          React.createElement(
+            'form',
+            { id: 'signout-nickname-form',
+              name: 'signout-nickname-form',
+              className: 'signout-nickname-form' },
+            React.createElement(
+              'label',
+              { htmlFor: 'nickname' },
+              'Copy Nickname:',
+              React.createElement('input', { className: 'signout-nickname', type: 'text', name: 'nickname', placeholder: 'nickname' })
+            ),
+            React.createElement('input', { className: 'signout-nickname-member', type: 'hidden', name: 'memberId', value: props.member.memberId }),
+            React.createElement('input', { type: 'hidden', name: '_csrf', value: props.csrfToken }),
+            React.createElement('input', { className: 'signout-nickname-submit', type: 'submit', value: 'Sign Out Copy' })
+          ),
+          React.createElement('div', { id: 'signout-nickname-results' })
+        ),
+        React.createElement(
+          'div',
+          { id: 'signout-container' },
+          React.createElement(
+            'h2',
+            null,
+            'Sign Out by Search:'
+          ),
+          React.createElement(
+            'form',
+            { id: 'signout-search-form',
+              name: 'signout-search-form',
+              className: 'signout-search-form' },
+            React.createElement('input', { className: 'signout-search', type: 'text', name: 'search', placeholder: 'search term' }),
+            React.createElement('input', { type: 'hidden', name: '_csrf', value: props.csrfToken }),
+            React.createElement('input', { className: 'signout-search-submit', type: 'submit', value: 'Search Catalogue' })
+          ),
+          React.createElement('div', { id: 'signout-search-results' })
+        )
+      )
+    );
+    // ELSE... (Member ID is invalid)
+  } else {
+    returnReact = React.createElement(
+      'div',
+      { id: 'member-container' },
+      React.createElement(
+        'h2',
+        null,
+        'Member ID is not valid.'
+      )
+    );
+  }
+
+  // Returning the React code
+  return returnReact;
+};
+
+// CatalogReact()
+var CatalogReact = function CatalogReact(props) {
+  // Defining the Entries array
+  var entriesReact = [];
+
+  // IF some Entries exist...
+  if (props.entries && props.entries.length > 0) {
+    var _loop3 = function _loop3(num) {
+      // Creating the Entry name link function
+      var toEntryFunc = function toEntryFunc(e) {
+        e.preventDefault();
+        EditHistory('/entry/' + props.entries[num].entryId);
+        return false;
+      };
+      var entryLink = React.createElement(
+        'a',
+        { href: '', onClick: toEntryFunc },
+        props.entries[num].engName
+      );
+      console.dir(props.entries[num]);
+
+      // Adding the Entry to the array
+      entriesReact.push(React.createElement(
+        'div',
+        { className: 'catalogue-entry' },
+        React.createElement(
+          'h2',
+          null,
+          entryLink
+        ),
+        React.createElement(
+          'p',
+          null,
+          React.createElement(
+            'b',
+            null,
+            'Jap. Name:'
+          ),
+          ' ',
+          props.entries[num].japName
+        ),
+        React.createElement(
+          'p',
+          null,
+          React.createElement(
+            'b',
+            null,
+            'Trn. Name:'
+          ),
+          ' ',
+          props.entries[num].trnName
+        ),
+        React.createElement(
+          'p',
+          null,
+          React.createElement(
+            'b',
+            null,
+            'Genres:'
+          ),
+          ' ',
+          props.entries[num].genres
+        ),
+        React.createElement(
+          'p',
+          null,
+          React.createElement(
+            'b',
+            null,
+            'Description:'
+          ),
+          ' ',
+          props.entries[num].description
+        ),
+        React.createElement(
+          'p',
+          null,
+          React.createElement(
+            'b',
+            null,
+            'Publisher:'
+          ),
+          ' ',
+          props.entries[num].publisher
+        ),
+        React.createElement(
+          'p',
+          null,
+          React.createElement(
+            'b',
+            null,
+            'Media Type:'
+          ),
+          ' ',
+          props.entries[num].mediaType
+        )
+      ));
+    };
+
+    // FOR all of the Entries...
+    for (var num = 0; num < props.entries.length; num++) {
+      _loop3(num);
+    }
+    // ELSE... (there are no Entries)
+  } else {
+    entriesReact.push(React.createElement(
+      'div',
+      { className: 'catalogue-entry' },
+      React.createElement(
+        'h2',
+        null,
+        'There are no Entries to display.'
+      )
+    ));
+  }
+  // Returning the Entries array
+  return React.createElement(
+    'div',
+    { id: 'catalogue-container' },
+    entriesReact
+  );
+};
+
+// MembersListReact()
+var MembersListReact = function MembersListReact(props) {
+  // Defining the Members array
+  var membersReact = [];
+
+  // IF some Members exist...
+  if (props.members.length > 0) {
+    var _loop4 = function _loop4(num) {
+      // Creating the Member link function
+      var toMemberFunc = function toMemberFunc(e) {
+        e.preventDefault();
+        EditHistory('/member/' + props.members[num].memberId);
+        return false;
+      };
+      var memberLink = React.createElement(
+        'a',
+        { href: '', onClick: toMemberFunc },
+        props.members[num].firstName,
+        ' ',
+        props.members[num].lastName
+      );
+
+      // Creating the member cards string
+      var cardsStr = '';
+      for (var cNum = 0; cNum < props.members[num].cards.length; cNum++) {
+        cardsStr += props.members[num].cards[cNum];
+        if (cNum < props.members[num].cards.length - 1) cardsStr += ', ';
+      }
+
+      // Adding the Member to the array
+      membersReact.push(React.createElement(
+        'div',
+        { className: 'list-member' },
+        React.createElement(
+          'h2',
+          null,
+          memberLink
+        ),
+        React.createElement(
+          'p',
+          null,
+          React.createElement(
+            'b',
+            null,
+            'Email:'
+          ),
+          ' ',
+          props.members[num].email
+        ),
+        React.createElement(
+          'p',
+          null,
+          React.createElement(
+            'b',
+            null,
+            'Cards:'
+          ),
+          ' ',
+          cardsStr
+        )
+      ));
+    };
+
+    // FOR all of the Members...
+    for (var num = 0; num < props.members.length; num++) {
+      _loop4(num);
+    }
+    // ELSE... (there are no Members)
+  } else {
+    membersReact.push(React.createElement(
+      'div',
+      { id: 'list-member' },
+      React.createElement(
+        'h2',
+        null,
+        'There are no Members to display.'
+      )
+    ));
+  }
+
+  // Returning the Members array
+  return React.createElement(
+    'div',
+    { id: 'member-list-container' },
+    membersReact
+  );
+};
+
+// ::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
+//  APP METHODS
+// ::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
 
 // RemoveNavButtonSelectedClass()
 var RemoveNavButtonSelectedClass = function RemoveNavButtonSelectedClass() {
@@ -54,31 +845,75 @@ var RemoveNavButtonSelectedClass = function RemoveNavButtonSelectedClass() {
 };
 
 // FillContentByPathName()
-var FillContentByPathName = function FillContentByPathName() {
+FillContentByPathName = function FillContentByPathName() {
   // Removing the selected nav button class
   RemoveNavButtonSelectedClass();
 
-  // Deciding what content to place on the page
+  // Getting the URI path name
   var path = window.location.pathname;
-  if (path === '/app') {
-    ReactDOM.render(React.createElement(
-      'div',
-      null,
-      'Generc stuff'
-    ), reactContainer);
+
+  // IF the path name is just the app homepage (catalog)...
+  if (path === '/app' || path === '/catalog') {
+    SendAJAX('GET', '/get_catalog', null, function (response) {
+      ReactDOM.render(React.createElement(CatalogReact, { entries: response.entries }), reactContainer);
+    });
     catalogNavButton.classList.add(navbarSelectedClass);
     return;
   }
-  if (path.startsWith('/entry/')) {
-    ReactDOM.render(React.createElement(
-      'div',
-      null,
-      'butts or something'
-    ), reactContainer);
+
+  // IF the path name is the Member list...
+  if (path === '/members') {
+    SendAJAX('Get', '/get_members', null, function (response) {
+      ReactDOM.render(React.createElement(MembersListReact, { members: response.members }), reactContainer);
+    });
+    memberListNavButton.classList.add(navbarSelectedClass);
     return;
   }
 
+  // IF the path name is an Entry...
+  if (path.startsWith('/entry/')) {
+    var idToGet = path.replace('/entry/', '');
+    SendAJAX('GET', '/get_entry?id=' + idToGet, null, function (response) {
+      ReactDOM.render(React.createElement(EntryReact, { entry: response.entry, csrfToken: response.csrfToken }), reactContainer);
+    });
+    return;
+  }
+
+  // IF the path name is a Member...
+  if (path.startsWith('/member/')) {
+    var _idToGet = path.replace('/member/', '');
+    SendAJAX('GET', '/get_member?id=' + _idToGet, null, function (response) {
+      ReactDOM.render(React.createElement(MemberReact, { member: response.member, csrfToken: response.csrfToken }), reactContainer);
+    });
+    return;
+  }
+
+  // IF the path name is to log out...
+  if (path === '/logout') {
+    ReactDOM.render(React.createElement(
+      'div',
+      null,
+      React.createElement(
+        'h2',
+        null,
+        'Logging out...'
+      )
+    ), reactContainer);
+    logoutNavButton.classList.add(navbarSelectedClass);
+    return;
+  }
+
+  // IF the path name was not recognized...
   console.log('UNRECOGNIZED PATH [' + path + ']');
+  ReactDOM.render(React.createElement(
+    'div',
+    null,
+    React.createElement(
+      'h2',
+      null,
+      '404 - Resource Not Found'
+    )
+  ), reactContainer);
 };
 window.onpopstate = FillContentByPathName;
 
@@ -95,24 +930,11 @@ var setup = function setup(csrfValue) {
   logoutNavButton = document.querySelector('#navbar-logout');
 
   // Setting the event handlers
-  var editHistory = function editHistory() {
-    window.history.pushState(null, 'Honsan', 'entry/7E12ABD9898');
-    // ReactDOM.render(<div>butts or something</div>, reactContainer);
-    FillContentByPathName(null);
-  };
-  SetButtonListener(newEntryNavButton, editHistory);
-  SetButtonListener(addMemberNavButton, function () {
-    console.log('[ Add Member ] clicked!');
-  });
-  SetButtonListener(catalogNavButton, function () {
-    console.log('[ Catalog ] clicked!');
-  });
-  SetButtonListener(memberListNavButton, function () {
-    console.log('[ Member List ] clicked!');
-  });
-  SetButtonListener(logoutNavButton, function () {
-    console.log('[ Logout ] clicked!');
-  });
+  SetButtonListener(newEntryNavButton, GetEditHistoryFunc('/entry/7E12ABD9898'));
+  SetButtonListener(addMemberNavButton, GetEditHistoryFunc('/add_member'));
+  SetButtonListener(catalogNavButton, GetEditHistoryFunc('/catalog'));
+  SetButtonListener(memberListNavButton, GetEditHistoryFunc('/members'));
+  SetButtonListener(logoutNavButton, GetEditHistoryFunc('/logout'));
 
   // Deciding what to do with URL
   FillContentByPathName(null);

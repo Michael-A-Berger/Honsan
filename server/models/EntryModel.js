@@ -53,16 +53,30 @@ const EntrySchema = new mongoose.Schema({
   },
 });
 
-// toAPI()
+// ToAPI()
 EntrySchema.statics.ToAPI = doc => ({
   entry_id: doc.entryId,
   en_name: doc.engName,
   jp_name: doc.japName,
   tr_name: doc.trnName,
+  // [ catalog_date ] is not defined until Entry is registered
   genres: doc.genres,
   publisher: doc.publisher,
   description: doc.description,
   media_type: doc.mediaType,
+});
+
+// ToFrontEnd()
+EntrySchema.statics.ToFrontEnd = doc => ({
+  entryId: doc.entry_id,
+  engName: doc.en_name,
+  japName: doc.jp_name,
+  trnName: doc.tr_name,
+  catalogDate: doc.catalog_date,
+  genres: doc.genres,
+  publisher: doc.publisher,
+  description: doc.description,
+  mediaType: doc.media_type,
 });
 
 // SelectString()

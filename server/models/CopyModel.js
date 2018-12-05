@@ -55,17 +55,32 @@ const CopySchema = new mongoose.Schema({
   },
 });
 
-// toAPI()
+// ToAPI()
 CopySchema.statics.ToAPI = doc => ({
   copy_id: doc.copyId,
   entry_id: doc.entryId,
   entry_name: doc.entryName,
   name: doc.name,
   nickname: doc.nickname,
+  // [ added_date ] is not defined until Copy is registered
   description: doc.description,
   quality: doc.quality,
-  // [ borrower ] is not defined until copy is signed out
-  // [ due_date ] is not defined until copy is signed out
+  // [ borrower ] is not defined until Copy is signed out
+  // [ due_date ] is not defined until Copy is signed out
+});
+
+// ToFrontEnd()
+CopySchema.statics.ToFrontEnd = doc => ({
+  copyId: doc.copy_id,
+  entryId: doc.entry_id,
+  entryName: doc.entry_name,
+  name: doc.name,
+  nickname: doc.nickname,
+  addedDate: doc.added_name,
+  description: doc.description,
+  quality: doc.quality,
+  borrower: doc.borrower,
+  dueDate: doc.due_date,
 });
 
 // ChangeProperties()

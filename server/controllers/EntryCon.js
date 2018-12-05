@@ -63,6 +63,30 @@ const GetCatalogue = (request, response) => {
   });
 };
 
+// GetCatalog()
+const GetCatalog = (request, response) => {
+  // Setting the Request & Response to assignable objects
+  const rq = request;
+  const rp = response;
+
+  // Getting the full catalog
+  return _Entry.Model.GetAll((err, docs) => {
+    // IF there was an error, say something about it
+    if (err) {
+      return models.UnexpectedServerError(rq, rp);
+    }
+
+    // Putting all the Entries into the proper format
+    const currentEntries = [];
+    for (let num = 0; num < docs.length; num++) {
+      currentEntries.push(_Entry.Model.ToFrontEnd(docs[num]));
+    }
+
+    // Returning the ENTIRE catalog [change in future]
+    return rp.json({ entries: currentEntries });
+  });
+};
+
 // GetHomepage()
 const GetHomepage = (rq, rp) => {
   rp.render('add_entry', { csrfToken: rq.csrfToken() });
@@ -74,6 +98,58 @@ const GetCataloguePage = (rq, rp) => _Entry.Model.GetAll((err, docs) => {
 
   rp.render('catalogue', { entries: docs });
 });
+
+// GetEntry()
+const GetEntry = (rq, rp) => {
+  // Getting the Entry object
+  const v = _Entry.Model.GetByID(rq.query.id, (error, docEntry) => {
+    if (error) {
+      console.log(error);
+      return models.UnexpectedServerError(rq, rp);
+    }
+
+    // IF the entry object doesn't exist...
+    if (docEntry === null || docEntry === undefined) {
+      return rp.json({
+        entry: null,
+        csrfToken: null,
+      });
+    }
+
+    // Getting the Copies of the Entry
+    return _Copy.Model.GetAllOfEntry(docEntry.entry_id, (error2, docCopies) => {
+      // IF a Copy retreival error occurred, say so
+      if (error2) {
+        console.log(error);
+        return models.UnexpectedServerError(rq, rp);
+      }
+
+      // Copying the Entry doc into an assignable object
+      const currentEntry = _Entry.Model.ToFrontEnd(docEntry);
+
+      // IF there are some Copy docs assigned to the Entry doc...
+      if (docCopies.length > 0) {
+        let dueDate = '';
+        const currentCopies = [];
+        for (let num = 0; num < docCopies.length; num++) {
+          currentCopies[num] = _Copy.Model.ToFrontEnd(docCopies[num]);
+          dueDate = models.DayFromDate(docCopies[num].due_date);
+          currentCopies[num].dueDateStr = dueDate;
+        }
+        currentEntry.copies = currentCopies;
+      }
+
+      // Returning the JS Entry
+      return rp.json({
+        entry: currentEntry,
+        csrfToken: rq.csrfToken(),
+      });
+    });
+  });
+
+  // Returning the dummy balue
+  return v;
+};
 
 // GetEntryPage()
 const GetEntryPage = (rq, rp) => {
@@ -130,6 +206,8 @@ const GetEntryPage = (rq, rp) => {
 module.exports = {
   MakeEntry,
   GetCatalogue,
+  GetCatalog,
+  GetEntry,
   GetHomepage,
   GetCataloguePage,
   GetEntryPage,
