@@ -18,7 +18,8 @@ const LoginResponse = (data) => {
   if (data.error) {
     loginResults.innerHTML = `<p><b>ERROR:</b> ${data.error}</p>`;
   } else {
-    window.location.replace(data.redirect);
+    // window.location.replace(data.redirect);
+    window.location.href = '/catalog';
   }
 };
 
@@ -27,7 +28,7 @@ const SignupResponse = (data) => {
   if (data.error) {
     signupResults.innerHTML = `<p><b>ERROR:</b> ${data.error}</p>`;
   } else {
-    window.location.replace(data.redirect);
+    window.location.href = '/catalog';
   }
 };
 

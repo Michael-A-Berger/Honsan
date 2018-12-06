@@ -2,14 +2,14 @@
 
 // Setting up the ESLint rules
 /* eslint-env browser */
-/* global SendAJAX FormJSON SerializeForm GetToken */ // Taken from [ helper.js ]
+/* global SendAJAX SerializeForm GetToken */ // Taken from [ helper.js ]
 /* global ReactDOM */
 /* eslint-disable react/react-in-jsx-scope */
 /* eslint-disable react/prop-types */
 
 // TEST TEST TEST
-/* eslint-disable no-unused-vars */
-/* eslint-disable prefer-const */
+// /* eslint-disable no-unused-vars */
+// /* eslint-disable prefer-const */
 // TEST TEST TEST
 
 // Global variables
@@ -1277,7 +1277,7 @@ FillContentByPathName = function FillContentByPathName() {
   var path = window.location.pathname;
 
   // IF the path name is just the app homepage (catalog)...
-  if (path === '/app' || path === catalogPath) {
+  if (path === '/' || path === catalogPath) {
     SendAJAX('GET', '/get_catalog', null, function (response) {
       ReactDOM.render(React.createElement(CatalogReact, { entries: response.entries }), reactContainer);
     });

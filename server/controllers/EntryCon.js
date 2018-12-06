@@ -87,18 +87,6 @@ const GetCatalog = (request, response) => {
   });
 };
 
-// GetHomepage()
-const GetHomepage = (rq, rp) => {
-  rp.render('add_entry', { csrfToken: rq.csrfToken() });
-};
-
-// GetCataloguePage()
-const GetCataloguePage = (rq, rp) => _Entry.Model.GetAll((err, docs) => {
-  if (err) console.log(err);
-
-  rp.render('catalogue', { entries: docs });
-});
-
 // GetEntry()
 const GetEntry = (rq, rp) => {
   // Getting the Entry object
@@ -151,64 +139,10 @@ const GetEntry = (rq, rp) => {
   return v;
 };
 
-// GetEntryPage()
-const GetEntryPage = (rq, rp) => {
-  // Getting the Entry object
-  const v = _Entry.Model.GetByID(rq.query.id, (error, docEntry) => {
-    // IF something went wrong, say so
-    if (error) {
-      console.log(error);
-      return models.UnexpectedServerError(rq, rp);
-    }
-
-    // IF the Entry object doesn't exist...
-    if (docEntry === null || docEntry === undefined) {
-      return rp.render('entry', {
-        entry: null,
-        csrfToken: null,
-      });
-    }
-
-    // Getting the Copies of the Entry
-    return _Copy.Model.GetAllOfEntry(docEntry.entry_id, (error2, docCopies) => {
-      // IF a Copy retreival error occurred, say so
-      if (error2) {
-        console.log(error);
-        return models.UnexpectedServerError(rq, rp);
-      }
-
-      // Copying the Entry doc into an assignable object
-      const currentEntry = docEntry;
-
-      // IF there are some Copy docs assigned to the Entry doc...
-      if (docCopies.length > 0) {
-        currentEntry.copies = docCopies;
-        let dueDate = '';
-        for (let num = 0; num < currentEntry.copies.length; num++) {
-          dueDate = models.DayFromDate(currentEntry.copies[num].due_date);
-          currentEntry.copies[num].due_date_str = dueDate;
-        }
-      }
-
-      // console.dir(currentEntry);
-      return rp.render('entry', {
-        entry: currentEntry,
-        csrfToken: rq.csrfToken(),
-      });
-    });
-  });
-
-  // Returning the dummy value
-  return v;
-};
-
 // Defining the exports
 module.exports = {
   MakeEntry,
   GetCatalogue,
   GetCatalog,
   GetEntry,
-  GetHomepage,
-  GetCataloguePage,
-  GetEntryPage,
 };

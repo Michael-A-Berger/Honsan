@@ -84,9 +84,11 @@ AccountSchema.statics.GenerateHash = (pass, callback) => {
 // SelectString()
 const SelectString = (params) => {
   // Defining the return schema properties array
-  let propsToReturn = ['username',
+  let propsToReturn = ['account_id',
+    'username',
     'salt',
     'password',
+    'avatar',
     'added_date'];
 
   // IF specific props to retreive were passed in...
@@ -133,6 +135,14 @@ AccountSchema.statics.Authenticate = (user, pass, callback) => {
 // GetByUsername()
 AccountSchema.statics.GetByUsername = (name, callback) => {
   AccountModel.findOne({ username: name }, SelectString(), callback);
+};
+
+// GetAll()
+AccountSchema.statics.GetAll = callback => (AccountModel.find(SelectString()).exec(callback));
+
+// GetByID()
+AccountSchema.statics.GetByID = (id, callback) => {
+  AccountModel.findOne({ account_id: id }, SelectString(), callback);
 };
 
 // Setting the Account model to the schema

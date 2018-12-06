@@ -115,6 +115,30 @@ const Logout = (request, rp) => {
   rp.redirect('/login');
 };
 
+// GetAccount()
+const GetAccounts = (rq, rp) => {
+  // Getting all of the accounts
+  const v = _Account.Model.GetAll((error, docs) => {
+    // IF there was an error...
+    if (error) {
+      console.log(error);
+      models.UnexpectedServerError(rq, rp);
+    }
+
+    // Formatting the Accounts for the front end
+    const currentAccounts = [];
+    for (let num = 0; num < docs.length; num++) {
+      currentAccounts.push(_Account.Model.ToFrontEnd(docs[num]));
+    }
+
+    // Returning the formatted Accounts
+    return rp.json({ accounts: currentAccounts });
+  });
+
+  // Returning the dummy variable
+  return v;
+};
+
 // GetLoginPage()
 const GetLoginPage = (rq, rp) => {
   rp.render('login', { csrfToken: rq.csrfToken() });
@@ -131,6 +155,7 @@ module.exports = {
   Signup,
   Login,
   Logout,
+  GetAccounts,
   GetLoginPage,
   GetAppPage,
 };

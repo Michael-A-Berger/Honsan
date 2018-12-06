@@ -148,6 +148,9 @@ form textarea {
 #signout-container {
   display: none; }
 
+.copy-submit {
+  display: block; }
+
 #search-results {
   display: none; }
 

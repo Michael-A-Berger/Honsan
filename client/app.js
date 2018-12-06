@@ -1,13 +1,13 @@
 // Setting up the ESLint rules
 /* eslint-env browser */
-/* global SendAJAX FormJSON SerializeForm GetToken */ // Taken from [ helper.js ]
+/* global SendAJAX SerializeForm GetToken */ // Taken from [ helper.js ]
 /* global ReactDOM */
 /* eslint-disable react/react-in-jsx-scope */
 /* eslint-disable react/prop-types */
 
 // TEST TEST TEST
-/* eslint-disable no-unused-vars */
-/* eslint-disable prefer-const */
+// /* eslint-disable no-unused-vars */
+// /* eslint-disable prefer-const */
 // TEST TEST TEST
 
 // Global variables
@@ -15,6 +15,7 @@ let newEntryNavButton = {};
 let addMemberNavButton = {};
 let catalogNavButton = {};
 let memberListNavButton = {};
+let accountListNavButton = {};
 let logoutNavButton = {};
 let reactContainer = {};
 let lastResultsID = '';
@@ -29,6 +30,7 @@ const addEntryPath = '/add_entry';
 const addMemberPath = '/add_member';
 const catalogPath = '/catalog';
 const membersPath = '/members';
+const accountsPath = '/accounts';
 const logoutPath = '/logout';
 const resultsTimer = 4000;
 
@@ -385,7 +387,7 @@ const EntryCopiesTableReact = (props) => {
       let dueDate = '';
       if (props.copies[num].borrower) {
         // Creating the function for the Member link
-        let toMemberFunc = (e) => {
+        const toMemberFunc = (e) => {
           e.preventDefault();
           EditHistory(`/member/${props.copies[num].borrower}`);
           return false;
@@ -703,7 +705,7 @@ FillContentByPathName = () => {
   const path = window.location.pathname;
 
   // IF the path name is just the app homepage (catalog)...
-  if (path === '/app' || path === catalogPath) {
+  if (path === '/' || path === catalogPath) {
     SendAJAX('GET', '/get_catalog', null, (response) => {
       ReactDOM.render(<CatalogReact entries={response.entries} />,
         reactContainer);
@@ -783,6 +785,7 @@ const setup = () => {
   addMemberNavButton = document.querySelector('#navbar-add-member');
   catalogNavButton = document.querySelector('#navbar-catalog');
   memberListNavButton = document.querySelector('#navbar-member-list');
+  accountListNavButton = document.querySelector('#navbar-account-list');
   logoutNavButton = document.querySelector('#navbar-logout');
 
   // Setting the event handlers
@@ -790,6 +793,7 @@ const setup = () => {
   SetButtonListener(addMemberNavButton, GetEditHistoryFunc(addMemberPath));
   SetButtonListener(catalogNavButton, GetEditHistoryFunc(catalogPath));
   SetButtonListener(memberListNavButton, GetEditHistoryFunc(membersPath));
+  SetButtonListener(accountListNavButton, GetEditHistoryFunc(accountsPath));
   SetButtonListener(logoutNavButton, GetEditHistoryFunc(logoutPath));
 
   // Deciding what to do with URL

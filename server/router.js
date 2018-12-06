@@ -8,27 +8,6 @@ const router = (app) => {
   app.get('/GetToken',
     middleware.RequiresSecure,
     controllers.Account.GetToken);
-  app.get('/',
-    middleware.RequiresLogin,
-    controllers.Entry.GetHomepage);
-  app.get('/entry',
-    middleware.RequiresLogin,
-    controllers.Entry.GetEntryPage);
-  app.get('/member',
-    middleware.RequiresLogin,
-    controllers.Member.GetMemberPage);
-  app.get('/catalogue',
-    middleware.RequiresLogin,
-    controllers.Entry.GetCataloguePage);
-  app.get('/add_member',
-    middleware.RequiresLogin,
-    controllers.Member.GetAddMemberPage);
-  app.get('/get_catalogue',
-    middleware.RequiresLogin,
-    controllers.Entry.GetCatalogue);
-  app.get('/member_list',
-    middleware.RequiresLogin,
-    controllers.Member.GetMemberListPage);
   app.get('/login',
     middleware.RequiresLogout,
     middleware.RequiresSecure,
@@ -37,18 +16,7 @@ const router = (app) => {
     middleware.RequiresLogin,
     controllers.Account.Logout);
 
-  // NEW APP GETS
-  app.get('/app',
-    middleware.RequiresLogin,
-    controllers.Account.GetAppPage);
-  app.get('/:whatever/:whatever2',
-    middleware.RequiresLogin,
-    controllers.Account.GetAppPage);
-  app.get('/:whatever/:whatever2/:whatever3',
-    middleware.RequiresLogin,
-    controllers.Account.GetAppPage);
-
-  // NEW XHR GETS
+  // XHR GETS
   app.get('/get_entry',
     middleware.RequiresLogin,
     controllers.Entry.GetEntry);
@@ -61,6 +29,20 @@ const router = (app) => {
   app.get('/get_members',
     middleware.RequiresLogin,
     controllers.Member.GetMembers);
+
+  // SINGLE PAGE APP GETS
+  app.get('/',
+    middleware.RequiresLogin,
+    controllers.Account.GetAppPage);
+  app.get('/:whatever',
+    middleware.RequiresLogin,
+    controllers.Account.GetAppPage);
+  app.get('/:whatever/:whatever2',
+    middleware.RequiresLogin,
+    controllers.Account.GetAppPage);
+  app.get('/:whatever/:whatever2/:whatever3',
+    middleware.RequiresLogin,
+    controllers.Account.GetAppPage);
 
   // POST
   app.post('/make_entry',

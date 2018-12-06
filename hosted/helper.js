@@ -10,7 +10,19 @@ var SendAJAX = function SendAJAX(httpMethod, action, postData, callback) {
   xhr.onreadystatechange = function () {
     if (xhr.readyState === 4) {
       // console.log(xhr.responseText);
-      callback(JSON.parse(xhr.responseText));
+      // Try parsing the response
+      var response = {};
+      try {
+        response = JSON.parse(xhr.responseText);
+      } catch (err) {
+        console.dir(err);
+        response = {
+          error: 'An unexpected error occured.'
+        };
+      }
+
+      // Returning whatever the response is
+      callback(response);
     }
   };
 
