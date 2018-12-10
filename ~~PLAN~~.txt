@@ -1,11 +1,7 @@
 === THINGS TO DO ===
 
-- Convert to React
 - Deleting Entries/Copies/Members
-- Changing password
-- 404 page
 - CSS redesign
 - Kitsu search
-- Account page
 - Server Instance settings
 - 
