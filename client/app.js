@@ -168,12 +168,45 @@ const AddMember = (e) => {
       // Reloading the current app page
       FillContentByPathName(null);
 
-      // Resetting the for to its default values
+      // Resetting the form to its default values
       addMemberForm.reset();
 
       // IF there was a response message, show it
       if (data.message) {
         FillResultsDiv('#member-results', `${data.message}`, true);
+      }
+    }
+  });
+
+  // Preventing default behavior (again)
+  return false;
+};
+
+// ChangeAccountSettings
+const ChangeAccountSettings = (e) => {
+  // Preventing default behavior
+  e.preventDefault();
+
+  // Serializing the settings form
+  const changeSettingsForm = document.querySelector('#change-settings-form');
+  const serializedForm = SerializeForm(changeSettingsForm);
+
+  // Changing the settings
+  SendAJAX('POST', '/change_account_settings', serializedForm, (data) => {
+    // IF there was an error, say so
+    if (data.error) {
+      FillResultsDiv('#change-settings-results', `<b>ERROR:</b> ${data.error}`, false);
+    // ELSE... (there was no error)
+    } else {
+      // Reloading the current app page
+      FillContentByPathName(null);
+
+      // Reseting the form to its default values
+      changeSettingsForm.reset();
+
+      // IF there was a response message, show it
+      if (data.message) {
+        FillResultsDiv('#change-settings-results', `${data.message}`, true);
       }
     }
   });
@@ -600,6 +633,74 @@ const MemberReact = (props) => {
   return returnReact;
 };
 
+// AccountReact()
+const AccountReact = (props) => {
+  // Defining the React code to send back
+  let returnReact = '';
+  console.dir(props.account);
+
+  // IF the Account ID exists...
+  if (props.account) {
+    // IF the selected Account is the current acount being used...
+    let changeSettingsForm = '';
+    if (props.account.isUserAccount) {
+      // Creating the change settings form
+      changeSettingsForm = (
+        <div id='change-settings-container'>
+          <h2>Settings:</h2>
+          <form id='change-settings-form'
+                name='change-settings-form'
+                className='change-settings-form'>
+            <input type='hidden' name='accountId' value={props.account.accountId} />
+            <label htmlFor='oldPassword'>Current Password: <span className='form-required'>*</span>
+              <input className='change-settings-old-password' type='password' name='oldPassword' placeholder='current password'/>
+            </label>
+            <label htmlFor='newPassword'>New Password:
+              <input className='change-settings-new-password' type='password' name='newPassword' placeholder='new password'/>
+            </label>
+            <label htmlFor='confirmPassword'>Confirm New Password:
+              <input className='change-settings-confirm-password' type='password' name='confirmPassword' placeholder='new password'/>
+            </label>
+            <label htmlFor='avatar'>Avatar:
+              <select name='avatar'>
+                <option value='' selected></option>
+                <option value='/assets/media/avatar01.png'>Cake</option>
+                <option value='/assets/media/avatar02.png'>American Flag</option>
+                <option value='/assets/media/avatar03.png'>Japanese Flag</option>
+                <option value='/assets/media/avatar04.png'>Mt. Fuji</option>
+                <option value='/assets/media/avatar05.png'>Fox</option>
+              </select>
+            </label>
+            <input type='hidden' name='_csrf' value={props.csrfToken} />
+            <label className='form-required'>* Required</label>
+            <input className='change-settings-submit' type='submit' onClick={ChangeAccountSettings}
+              value='Change Settings' />
+          </form>
+          <div id='change-settings-results'></div>
+        </div>
+      );
+    }
+
+    // Setting the React code
+    returnReact = (
+      <div id='account-container'>
+        <div id='account-entry'>
+          <img src={props.account.avatar} className='account-avatar'></img>
+          <h1>{props.account.username}</h1>
+          <p><b>Date Created:</b> {props.account.addedDateStr}</p>
+        </div>
+        {changeSettingsForm}
+      </div>
+    );
+  // ELSE... (the Account doesn't exist)
+  } else {
+    returnReact = <div id='account-container'><h2>Account ID is not valid.</h2></div>;
+  }
+
+  // Returning the React code
+  return returnReact;
+};
+
 // CatalogReact()
 const CatalogReact = (props) => {
   // Defining the Entries array
@@ -675,11 +776,44 @@ const MembersListReact = (props) => {
     }
   // ELSE... (there are no Members)
   } else {
-    membersReact.push(<div id='list-member'><h2>There are no Members to display.</h2></div>);
+    membersReact.push(<div className='list-member'><h2>There are no Members to display.</h2></div>);
   }
 
   // Returning the Members array
   return <div id='member-list-container'>{membersReact}</div>;
+};
+
+// AccountsListReact()
+const AccountsListReact = (props) => {
+  // Defining the Accounts array
+  const accountsReact = [];
+
+  // IF some Accounts exist... (ignore the logical assumptions)
+  if (props.accounts.length > 0) {
+    // FOR all of the members...
+    for (let num = 0; num < props.accounts.length; num++) {
+      const toAccountFunc = (e) => {
+        e.preventDefault();
+        EditHistory(`/account/${props.accounts[num].accountId}`);
+        return false;
+      };
+      const accountLink = <a href='' onClick={toAccountFunc}>{props.accounts[num].username}</a>;
+
+      // Adding the Account to the array
+      accountsReact.push(
+        <div className='list-account'>
+          <img src={props.accounts[num].avatar} className='list-account-avatar'></img>
+          <h2>{accountLink}</h2>
+        </div>,
+      );
+    }
+  // ELSE...
+  } else {
+    accountsReact.push(<div className='list-account'><h2>There are no Accounts to display. (Somehow...)</h2></div>);
+  }
+
+  // Returning the Accounts array
+  return accountsReact;
 };
 
 // ::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
@@ -693,6 +827,7 @@ const RemoveNavButtonSelectedClass = () => {
   addMemberNavButton.classList.remove(navbarSelectedClass);
   catalogNavButton.classList.remove(navbarSelectedClass);
   memberListNavButton.classList.remove(navbarSelectedClass);
+  accountListNavButton.classList.remove(navbarSelectedClass);
   logoutNavButton.classList.remove(navbarSelectedClass);
 };
 
@@ -723,6 +858,15 @@ FillContentByPathName = () => {
     return;
   }
 
+  // IF the path name is the Account list...
+  if (path === accountsPath) {
+    SendAJAX('GET', '/get_accounts', null, (response) => {
+      ReactDOM.render(<AccountsListReact accounts={response.accounts} />, reactContainer);
+    });
+    accountListNavButton.classList.add(navbarSelectedClass);
+    return;
+  }
+
   // IF the path name is an Entry...
   if (path.startsWith('/entry/')) {
     const idToGet = path.replace('/entry/', '');
@@ -738,6 +882,16 @@ FillContentByPathName = () => {
     const idToGet = path.replace('/member/', '');
     SendAJAX('GET', `/get_member?id=${idToGet}`, null, (response) => {
       ReactDOM.render(<MemberReact member={response.member} csrfToken={response.csrfToken} />,
+        reactContainer);
+    });
+    return;
+  }
+
+  // IF the path name is an Account...
+  if (path.startsWith('/account/')) {
+    const idToGet = path.replace('/account/', '');
+    SendAJAX('GET', `/get_account?id=${idToGet}`, null, (response) => {
+      ReactDOM.render(<AccountReact account={response.account} csrfToken={response.csrfToken} />,
         reactContainer);
     });
     return;

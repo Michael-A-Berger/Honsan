@@ -34,7 +34,7 @@ const MemberSchema = new mongoose.Schema({
   },
   added_date: {
     type: String,
-    default: Date.now,
+    default: new Date(),
   },
   cards: {
     type: [String],

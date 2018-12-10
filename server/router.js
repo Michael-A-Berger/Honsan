@@ -23,12 +23,18 @@ const router = (app) => {
   app.get('/get_member',
     middleware.RequiresLogin,
     controllers.Member.GetMember);
+  app.get('/get_account',
+    middleware.RequiresLogin,
+    controllers.Account.GetAccount);
   app.get('/get_catalog',
     middleware.RequiresLogin,
     controllers.Entry.GetCatalog);
   app.get('/get_members',
     middleware.RequiresLogin,
     controllers.Member.GetMembers);
+  app.get('/get_accounts',
+    middleware.RequiresLogin,
+    controllers.Account.GetAccounts);
 
   // SINGLE PAGE APP GETS
   app.get('/',
@@ -54,6 +60,9 @@ const router = (app) => {
   app.post('/make_member',
     middleware.RequiresLogin,
     controllers.Member.MakeMember);
+  app.post('/change_account_settings',
+    middleware.RequiresLogin,
+    controllers.Account.ChangeSettings);
   app.post('/signout_nickname',
     middleware.RequiresLogin,
     controllers.Copy.SignOutByNickname);

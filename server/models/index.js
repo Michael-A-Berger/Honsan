@@ -41,6 +41,25 @@ const DayFromDate = (d) => {
   return toReturn;
 };
 
+// DayTimeFromDate()
+const DayTimeFromDate = (d) => {
+  const time = new Date(d);
+  let toReturn = null;
+  if (NullOrUndefined(d)) {
+    toReturn = null;
+  } else {
+    toReturn = `${time.getMonth() + 1}/${time.getDate()}/${time.getFullYear()}, `;
+    let timeHours = time.getHours();
+    let timeMinutes = time.getMinutes();
+    const ampm = (timeHours < 12 ? 'am' : 'pm');
+    timeHours %= 12;
+    if (timeHours === 0) timeHours = 12;
+    if (timeMinutes < 10) timeMinutes = `0${timeMinutes}`;
+    toReturn += `${timeHours}:${timeMinutes}${ampm}`;
+  }
+  return toReturn;
+};
+
 // UnexpectedServerError()
 const UnexpectedServerError = (rq, rp) => {
   const v = rp.status(500).json({ error: 'An unexpected error occurred, please try again later' });
@@ -57,5 +76,6 @@ module.exports = {
   GenerateUniqueID,
   CurrentTime,
   DayFromDate,
+  DayTimeFromDate,
   UnexpectedServerError,
 };

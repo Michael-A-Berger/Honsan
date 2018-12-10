@@ -86,7 +86,7 @@ const Login = (request, rp) => {
   const password = `${rq.body.password}`;
 
   // Authenticating the login info
-  return _Account.Model.Authenticate(username, password, (error, doc) => {
+  return _Account.Model.AuthenticateByName(username, password, (error, doc) => {
     // IF an error occured with the authentication, say so
     if (error !== null || doc === null) {
       return rp.status(401).json({ error: 'Wrong login information' });
@@ -115,7 +115,121 @@ const Logout = (request, rp) => {
   rp.redirect('/login');
 };
 
+// ChangeSettings
+const ChangeSettings = (request, rp) => {
+  // Creaing a Request copy for body reassignment
+  const rq = request;
+
+  // Casting all of the body parameters into strings
+  rq.body.accountId = `${rq.body.accountId}`;
+  rq.body.oldPassword = `${rq.body.oldPassword}`;
+  rq.body.newPassword = `${rq.body.newPassword}`;
+  rq.body.confirmPassword = `${rq.body.confirmPassword}`;
+  rq.body.avatar = `${rq.body.avatar}`;
+
+  // IF the request body doesn't have the appopriate properties, say so
+  if (!rq.body.accountId || !rq.body.oldPassword
+      || (!rq.body.newPassword && !rq.body.confirmPassword && rq.body.avatar === '')) {
+    return rp.status(400).json({ error: 'Settings information is incomplete or missing.' });
+  }
+
+  // IF the new and confirm password aren't the same, say so
+  if (rq.body.newPassword !== rq.body.confirmPassword) {
+    return rp.status(400).json({ error: 'New password forms do not match!' });
+  }
+
+  // Getting the account to change the settings for
+  return _Account.Model.AuthenticateByID(rq.body.accountId, rq.body.oldPassword, (error1, doc) => {
+    // IF an error occured with the authentication, say so
+    if (error1 !== null || doc === null) {
+      return models.UnexpectedServerError(rq, rp);
+    }
+
+    // Creating the Account copy to make it assignable
+    const docAccount = doc;
+
+    // Changing the ancilliary settings
+    if (rq.body.avatar !== '') docAccount.avatar = rq.body.avatar;
+
+    // IF the Account setting involved a password change, get the hash + salt
+    if (rq.body.newPassword && rq.body.confirmPassword) {
+      return _Account.Model.GenerateHash(rq.body.newPassword, (returnSalt, hash) => {
+        docAccount.password = hash;
+        docAccount.salt = returnSalt;
+
+        // Saving the Account w/ the new hash + salt
+        const accountPromise = docAccount.save();
+        accountPromise.then(() => {
+          console.log(`- Settings for Account [${docAccount.username}] were changed at ${models.CurrentTime()}`);
+          return rp.json({
+            message: 'Account settings were successfully changed!',
+          });
+        });
+        return accountPromise.catch((error) => {
+          console.log(error);
+          return models.UnexpectedServerError(rq, rp);
+        });
+      });
+    }
+
+    // ELSE... (just save normally)
+    const accountPromise = docAccount.save();
+    accountPromise.then(() => {
+      console.log(`- Settings for Account [${docAccount.username}] were changed at ${models.CurrentTime()}`);
+      return rp.json({
+        message: 'Account settings were successfully changed!',
+      });
+    });
+    return accountPromise.catch((error) => {
+      console.log(error);
+      return models.UnexpectedServerError(rq, rp);
+    });
+  });
+};
+
 // GetAccount()
+const GetAccount = (request, rp) => {
+  // Recasting the ID to a string
+  const rq = request;
+  rq.query.id = `${rq.query.id}`;
+
+  // Getting the specified account
+  const v = _Account.Model.GetByID(rq.query.id, (error, docAccount) => {
+    // IF something went wrong, say so
+    if (error) {
+      console.log(error);
+      return models.UnexpectedServerError(rq, rp);
+    }
+
+    // IF the Account doesn't exist...
+    if (docAccount === null || docAccount === undefined) {
+      return rp.json({
+        account: null,
+        csrfToken: null,
+      });
+    }
+
+    // Creating the Account details to return
+    const currentAccount = _Account.Model.ToFrontEnd(docAccount);
+    currentAccount.addedDateStr = models.DayTimeFromDate(docAccount.added_date);
+
+    // IF the retreived Account is the same as the session Account...
+    if (rq.session.account._id === docAccount._id.toString()) {
+      currentAccount.isUserAccount = true;
+    }
+
+    // Returning the current account
+    return rp.json({
+      account: currentAccount,
+      csrfToken: rq.csrfToken(),
+    });
+  });
+
+  // Returning the dummy variables
+  return v;
+};
+
+// GetAccounts()
 const GetAccounts = (rq, rp) => {
   // Getting all of the accounts
   const v = _Account.Model.GetAll((error, docs) => {
@@ -155,6 +269,8 @@ module.exports = {
   Signup,
   Login,
   Logout,
+  ChangeSettings,
+  GetAccount,
   GetAccounts,
   GetLoginPage,
   GetAppPage,

@@ -35,7 +35,7 @@ const CopySchema = new mongoose.Schema({
   },
   added_date: {
     type: String,
-    default: Date.now,
+    default: new Date(),
   },
   description: {
     type: String,

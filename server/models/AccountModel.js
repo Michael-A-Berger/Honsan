@@ -42,7 +42,7 @@ const AccountSchema = new mongoose.Schema({
   },
   added_date: {
     type: String,
-    default: Date.now,
+    default: new Date(),
   },
 });
 
@@ -107,9 +107,34 @@ const SelectString = (params) => {
   return propString;
 };
 
-// Authenticate()
-AccountSchema.statics.Authenticate = (user, pass, callback) => {
+// AuthenticateByName()
+AccountSchema.statics.AuthenticateByName = (user, pass, callback) => {
   const v = AccountModel.findOne({ username: user }, SelectString(), (err1, doc) => {
+    if (err1) {
+      console.log(err1);
+      return callback(err1, null);
+    }
+
+    if (!doc) {
+      return callback(null, null);
+    }
+
+    return crypto.pbkdf2(pass, doc.salt, iterations, keyLength, encryptMethod, (err2, hash) => {
+      if (err2) {
+        return callback(err2, null);
+      }
+      if (hash.toString('hex') !== doc.password) {
+        return callback(null, null);
+      }
+      return callback(null, doc);
+    });
+  });
+  return v;
+};
+
+// AuthenticateByID()
+AccountSchema.statics.AuthenticateByID = (id, pass, callback) => {
+  const v = AccountModel.findOne({ account_id: id }, SelectString(), (err1, doc) => {
     if (err1) {
       console.log(err1);
       return callback(err1, null);
@@ -138,7 +163,9 @@ AccountSchema.statics.GetByUsername = (name, callback) => {
 };
 
 // GetAll()
-AccountSchema.statics.GetAll = callback => (AccountModel.find(SelectString()).exec(callback));
+AccountSchema.statics.GetAll = callback => (
+  AccountModel.find().select(SelectString()).exec(callback)
+);
 
 // GetByID()
 AccountSchema.statics.GetByID = (id, callback) => {
