@@ -1,6 +1,6 @@
 // Setting up the ESLint rules
 /* eslint-env browser */
-/* global SendAJAX SerializeForm GetToken */ // Taken from [ helper.js ]
+/* global SendAJAX FormJSON SerializeJSON SerializeForm GetToken */ // Taken from [ helper.js ]
 /* global ReactDOM */
 /* eslint-disable react/react-in-jsx-scope */
 /* eslint-disable react/prop-types */
@@ -82,6 +82,40 @@ const FillResultsDiv = (htmlID, message, timeout) => {
 // ::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
 //  API METHODS
 // ::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
+
+// TestDatabase()
+const TestDatabase = (e) => {
+  // Preventing default behavior
+  e.preventDefault();
+
+  // Getting the Test Database form properties
+  const testDatabaseForm = document.querySelector('#test-form');
+  const testJSON = FormJSON(testDatabaseForm);
+  let bodyToSend = null;
+
+  // IF the test method is POST, try parsing the JSON body
+  if (testJSON.method === 'POST') {
+    try {
+      testJSON.body = JSON.parse(testJSON.body);
+      bodyToSend = SerializeJSON(testJSON.body);
+    } catch (err) {
+      FillResultsDiv('#test-results', `<b>JSON ERROR:</b> ${err}`, false);
+      return false;
+    }
+  }
+
+  // Testing the Database
+  SendAJAX(testJSON.method, testJSON.url, bodyToSend, (data) => {
+    // Print out the entire JSON object
+    let prettyJSON = JSON.stringify(data, null, 4);
+    prettyJSON = prettyJSON.replace(/\n/g, '<br>');
+    prettyJSON = prettyJSON.replace(/\s\s\s\s/g, '&nbsp;&nbsp;&nbsp;&nbsp;');
+    FillResultsDiv('#test-results', prettyJSON, false);
+  });
+
+  // Preventing default behavior (again)
+  return false;
+};
 
 // AddEntry()
 const AddEntry = (e) => {
@@ -297,6 +331,40 @@ const RenewCopy = (copyId, csrfToken) => {
 // ::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
 //  REACT METHODS
 // ::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
+
+// TestDatabaseReact()
+const TestDatabaseReact = (props) => {
+  // Defining the React code to return
+  const returnReact = (
+    <div>
+      <div id='test-container'>
+        <form id='test-form'
+              name='test-form'
+              className='test-form'>
+          <label htmlFor='method'>Method:
+            <select name='method'>
+              <option value='GET' selected>GET</option>
+              <option value='POST'>POST</option>
+            </select>
+          </label>
+          <label htmlFor='url'>URL:
+            <input className='test-url' type='text' name='url' placeholder='Ex; /make_entry'></input>
+          </label>
+          <h3>Message Body (JSON):</h3>
+          <textarea className='test-body' form='test-form' name='body' rows='6'>
+            {`{\n    "_csrf": "${props.csrfToken}",\n}`}
+          </textarea>
+          <div></div>
+          <input className='test-submit' type='submit' onClick={TestDatabase} value='Test Database' />
+        </form>
+        <div id='test-results'></div>
+      </div>
+    </div>
+  );
+
+  // Returning the React code
+  return returnReact;
+};
 
 // AddEntryReact()
 const AddEntryReact = (props) => {
@@ -838,6 +906,15 @@ FillContentByPathName = () => {
 
   // Getting the URI path name
   const path = window.location.pathname;
+
+  // IF the path name is the Testing page...
+  if (path === '/test_database') {
+    GetToken((csrfValue) => {
+      ReactDOM.render(<TestDatabaseReact csrfToken={csrfValue} />,
+        reactContainer);
+    });
+    return;
+  }
 
   // IF the path name is just the app homepage (catalog)...
   if (path === '/' || path === catalogPath) {

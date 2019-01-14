@@ -57,20 +57,37 @@ const FormJSON = (form) => {
   return formData;
 };
 
+// SerializeJSON()
+const SerializeJSON = (obj) => {
+  // Getting the JSON keys
+  const objKeys = Object.keys(obj);
+
+  // Defining the data string
+  let dataString = '';
+  for (let num = 0; num < objKeys.length; num++) {
+    dataString += `${objKeys[num]}=${obj[objKeys[num]]}`;
+    if (num < objKeys.length - 1) dataString += '&';
+  }
+
+  // Returning the data string
+  return dataString;
+};
+
+
 // SerializeForm()
 const SerializeForm = (form) => {
   // Getting the form values
   const formData = FormJSON(form);
   console.dir(formData);
 
-  // Defining the data string
-  let dataString = '';
-  const entryKeys = Object.keys(formData);
-  for (let num = 0; num < entryKeys.length; num++) {
-    dataString += `${entryKeys[num]}=${formData[entryKeys[num]]}`;
-    if (num < entryKeys.length - 1) dataString += '&';
-  }
+  // // Defining the data string
+  // let dataString = '';
+  // const entryKeys = Object.keys(formData);
+  // for (let num = 0; num < entryKeys.length; num++) {
+  //   dataString += `${entryKeys[num]}=${formData[entryKeys[num]]}`;
+  //   if (num < entryKeys.length - 1) dataString += '&';
+  // }
 
   // Returning the data string
-  return dataString;
+  return SerializeJSON(formData);
 };

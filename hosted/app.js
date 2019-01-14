@@ -2,7 +2,7 @@
 
 // Setting up the ESLint rules
 /* eslint-env browser */
-/* global SendAJAX SerializeForm GetToken */ // Taken from [ helper.js ]
+/* global SendAJAX FormJSON SerializeJSON SerializeForm GetToken */ // Taken from [ helper.js ]
 /* global ReactDOM */
 /* eslint-disable react/react-in-jsx-scope */
 /* eslint-disable react/prop-types */
@@ -86,6 +86,40 @@ var FillResultsDiv = function FillResultsDiv(htmlID, message, timeout) {
 // ::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
 //  API METHODS
 // ::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
+
+// TestDatabase()
+var TestDatabase = function TestDatabase(e) {
+  // Preventing default behavior
+  e.preventDefault();
+
+  // Getting the Test Database form properties
+  var testDatabaseForm = document.querySelector('#test-form');
+  var testJSON = FormJSON(testDatabaseForm);
+  var bodyToSend = null;
+
+  // IF the test method is POST, try parsing the JSON body
+  if (testJSON.method === 'POST') {
+    try {
+      testJSON.body = JSON.parse(testJSON.body);
+      bodyToSend = SerializeJSON(testJSON.body);
+    } catch (err) {
+      FillResultsDiv('#test-results', '<b>JSON ERROR:</b> ' + err, false);
+      return false;
+    }
+  }
+
+  // Testing the Database
+  SendAJAX(testJSON.method, testJSON.url, bodyToSend, function (data) {
+    // Print out the entire JSON object
+    var prettyJSON = JSON.stringify(data, null, 4);
+    prettyJSON = prettyJSON.replace(/\n/g, '<br>');
+    prettyJSON = prettyJSON.replace(/\s\s\s\s/g, '&nbsp;&nbsp;&nbsp;&nbsp;');
+    FillResultsDiv('#test-results', prettyJSON, false);
+  });
+
+  // Preventing default behavior (again)
+  return false;
+};
 
 // AddEntry()
 var AddEntry = function AddEntry(e) {
@@ -301,6 +335,66 @@ var RenewCopy = function RenewCopy(copyId, csrfToken) {
 // ::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
 //  REACT METHODS
 // ::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
+
+// TestDatabaseReact()
+var TestDatabaseReact = function TestDatabaseReact(props) {
+  // Defining the React code to return
+  var returnReact = React.createElement(
+    'div',
+    null,
+    React.createElement(
+      'div',
+      { id: 'test-container' },
+      React.createElement(
+        'form',
+        { id: 'test-form',
+          name: 'test-form',
+          className: 'test-form' },
+        React.createElement(
+          'label',
+          { htmlFor: 'method' },
+          'Method:',
+          React.createElement(
+            'select',
+            { name: 'method' },
+            React.createElement(
+              'option',
+              { value: 'GET', selected: true },
+              'GET'
+            ),
+            React.createElement(
+              'option',
+              { value: 'POST' },
+              'POST'
+            )
+          )
+        ),
+        React.createElement(
+          'label',
+          { htmlFor: 'url' },
+          'URL:',
+          React.createElement('input', { className: 'test-url', type: 'text', name: 'url', placeholder: 'Ex; /make_entry' })
+        ),
+        React.createElement(
+          'h3',
+          null,
+          'Message Body (JSON):'
+        ),
+        React.createElement(
+          'textarea',
+          { className: 'test-body', form: 'test-form', name: 'body', rows: '6' },
+          '{\n    "_csrf": "' + props.csrfToken + '",\n}'
+        ),
+        React.createElement('div', null),
+        React.createElement('input', { className: 'test-submit', type: 'submit', onClick: TestDatabase, value: 'Test Database' })
+      ),
+      React.createElement('div', { id: 'test-results' })
+    )
+  );
+
+  // Returning the React code
+  return returnReact;
+};
 
 // AddEntryReact()
 var AddEntryReact = function AddEntryReact(props) {
@@ -1505,6 +1599,14 @@ FillContentByPathName = function FillContentByPathName() {
 
   // Getting the URI path name
   var path = window.location.pathname;
+
+  // IF the path name is the Testing page...
+  if (path === '/test_database') {
+    GetToken(function (csrfValue) {
+      ReactDOM.render(React.createElement(TestDatabaseReact, { csrfToken: csrfValue }), reactContainer);
+    });
+    return;
+  }
 
   // IF the path name is just the app homepage (catalog)...
   if (path === '/' || path === catalogPath) {

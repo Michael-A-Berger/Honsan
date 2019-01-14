@@ -106,6 +106,12 @@ form textarea {
   border: solid 1px #000000;
   border-radius: 5px; }
 
+#test-container {
+  width: 600px;
+  padding: 10px;
+  border: solid 1px #000000;
+  border-radius: 5px; }
+
 #catalogue-container {
   min-width: 300px;
   max-width: 1000px; }
@@ -153,7 +159,7 @@ form textarea {
 
 #account-container {
   max-width: 500px;
-  min-width: 300px;
+  min-width: 325px;
   margin-right: 10px;
   padding: 10px;
   border: solid 1px #000000;
@@ -164,6 +170,12 @@ form textarea {
 
 #search-results {
   display: none; }
+
+#test-results {
+  margin-top: 50px;
+  background-color: #EEEEEE;
+  padding: 5px;
+  border-radius: 5px; }
 
 #signout-nickname-results {
   margin-top: 50px; }
