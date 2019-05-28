@@ -46,7 +46,10 @@ const MakeCopy = (rq, rp) => {
     // Setting up the save callback functions
     copyPromise.then(() => {
       console.log(`- Added [${apiReady.name}] Copy to [${docEntry.en_name}] Entry at ${models.CurrentTime()}`);
-      rp.status(201).json({ message: 'Copy added to the Entry' });
+      rp.status(201).json({
+        message: 'Copy added to the Entry',
+        copyId: apiReady.copy_id,
+      });
     });
     return copyPromise.catch((err) => {
       console.log(err);
@@ -57,6 +60,36 @@ const MakeCopy = (rq, rp) => {
       return models.UnexpectedServerError(rq, rp);
     });
   });
+};
+
+// RemoveCopy()
+const RemoveCopy = (rq, rp) => {
+  // Trying to get the Copy (to see if the ID is valid)
+  const v = _Copy.Model.GetByID(rq.body.copyId, (err1, doc) => {
+    // Creating an assignable Copy
+    const docCopy = doc;
+
+    // Error Checking
+    if (err1) {
+      return models.UnexpectedServerError(rq, rp);
+    }
+    if (!docCopy) {
+      return rp.status(400).json({ error: 'Specified Copy does not exist' });
+    }
+
+    // Deleting the Copy
+    return _Copy.Model.Delete(doc.copy_id, (err2) => {
+      if (err2) {
+        console.log(err2);
+        return models.UnexpectedServerError(rq, rp);
+      }
+      console.log(`- Deleted [${docCopy.name}] Copy from [${docCopy.entry_name}] Entry at ${models.CurrentTime()}`);
+      return rp.status(200).json({ message: 'Copy deleted from Entry' });
+    });
+  });
+
+  // Returning the dummy value
+  return v;
 };
 
 // SignOutByNickname()
@@ -203,6 +236,7 @@ const RenewByID = (request, rp) => {
 // Setting the exports
 module.exports = {
   MakeCopy,
+  RemoveCopy,
   SignOutByNickname,
   SignInByID,
   RenewByID,

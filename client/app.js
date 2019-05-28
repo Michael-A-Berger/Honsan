@@ -335,8 +335,7 @@ const RenewCopy = (copyId, csrfToken) => {
 // TestDatabaseReact()
 const TestDatabaseReact = (props) => {
   // Defining the React code to return
-  const returnReact = (
-    <div>
+  const returnReact = (<div>
       <div id='test-container'>
         <form id='test-form'
               name='test-form'
@@ -352,7 +351,9 @@ const TestDatabaseReact = (props) => {
           </label>
           <h3>Message Body (JSON):</h3>
           <textarea className='test-body' form='test-form' name='body' rows='6'>
-            {`{\n    "_csrf": "${props.csrfToken}",\n}`}
+            {
+              `{\n    "_csrf": "${props.csrfToken}",\n}`
+            }
           </textarea>
           <div></div>
           <input className='test-submit' type='submit' onClick={TestDatabase} value='Test Database' />
@@ -530,10 +531,14 @@ const EntryReact = (props) => {
         <div className='entry'>
           <h1>{props.entry.engName}</h1>
           <p><b>Jap. Name:</b> {props.entry.japName}</p>
-          <p><b>Trn. Name:</b> {props.entry.trnName}</p>
+          <p><b>Trn. Name:</b>
+            {props.entry.trnName}
+          </p>
           <p><b>Genres:</b> {props.entry.genres}</p>
           <p><b>Description:</b> {props.entry.description}</p>
-          <p><b>Publisher:</b> {props.entry.publisher}</p>
+          <p><b>Publisher:</b>
+            {props.entry.publisher}
+          </p>
           <p><b>Media Type:</b> {props.entry.mediaType}</p>
           <div className='copies-contrainer'>
             <h2><b>Copies:</b></h2>
@@ -620,8 +625,8 @@ const MemberBorrowedTableReact = (props) => {
         <tr>
           <td>{entryLink}</td>
           <td>{props.borrowed[num].name}</td>
-          <td>{props.borrowed[num].nickname}</td>
           <td>{props.borrowed[num].quality}</td>
+          <td>{props.borrowed[num].nickname}</td>
           <td>{props.borrowed[num].dueDateStr}</td>
           <td>{renewButton}</td>
           <td>{signinButton}</td>
@@ -694,7 +699,9 @@ const MemberReact = (props) => {
     );
   // ELSE... (Member ID is invalid)
   } else {
-    returnReact = <div id='member-container'><h2>Member ID is not valid.</h2></div>;
+    returnReact = <div id='member-container'>
+      <h2>Member ID is not valid.</h2>
+    </div>;
   }
 
   // Returning the React code
@@ -754,7 +761,9 @@ const AccountReact = (props) => {
       <div id='account-container'>
         <div id='account-entry'>
           <img src={props.account.avatar} className='account-avatar'></img>
-          <h1>{props.account.username}</h1>
+          <h1>
+            {props.account.username}
+          </h1>
           <p><b>Date Created:</b> {props.account.addedDateStr}</p>
         </div>
         {changeSettingsForm}
@@ -779,12 +788,13 @@ const CatalogReact = (props) => {
     // FOR all of the Entries...
     for (let num = 0; num < props.entries.length; num++) {
       // Creating the Entry name link function
+      const relLink = `/entry/${props.entries[num].entryId}`;
       const toEntryFunc = (e) => {
         e.preventDefault();
-        EditHistory(`/entry/${props.entries[num].entryId}`);
+        EditHistory(relLink);
         return false;
       };
-      const entryLink = <a href='' onClick={toEntryFunc}>{props.entries[num].engName}</a>;
+      const entryLink = <a href={relLink} onClick={toEntryFunc}>{props.entries[num].engName}</a>;
 
       // Adding the Entry to the array
       entriesReact.push(
@@ -816,13 +826,14 @@ const MembersListReact = (props) => {
   if (props.members.length > 0) {
     // FOR all of the Members...
     for (let num = 0; num < props.members.length; num++) {
-      // Creating the Member link function
+      // Creating the Member name link function
+      const relativeLinkToMember = `/member/${props.members[num].memberId}`;
       const toMemberFunc = (e) => {
         e.preventDefault();
-        EditHistory(`/member/${props.members[num].memberId}`);
+        EditHistory(relativeLinkToMember);
         return false;
       };
-      const memberLink = <a href='' onClick={toMemberFunc}>
+      const memberLink = <a href={relativeLinkToMember} onClick={toMemberFunc}>
           {props.members[num].firstName} {props.members[num].lastName}
         </a>;
 
@@ -860,12 +871,16 @@ const AccountsListReact = (props) => {
   if (props.accounts.length > 0) {
     // FOR all of the members...
     for (let num = 0; num < props.accounts.length; num++) {
+      // Creating the Account name link function
+      const relLink = `/account/${props.accounts[num].accountId}`;
       const toAccountFunc = (e) => {
         e.preventDefault();
-        EditHistory(`/account/${props.accounts[num].accountId}`);
+        EditHistory(relLink);
         return false;
       };
-      const accountLink = <a href='' onClick={toAccountFunc}>{props.accounts[num].username}</a>;
+      const accountLink = <a href={relLink} onClick={toAccountFunc}>
+              {props.accounts[num].username}
+            </a>;
 
       // Adding the Account to the array
       accountsReact.push(

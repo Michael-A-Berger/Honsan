@@ -1,0 +1,12 @@
+=============================
+=== HONSAN TEXT CHANGELOG ===
+=============================
+
+~~~~~~~~~~~~~~
+~~~ v00.29 ~~~
+~~~~~~~~~~~~~~
+
+- Added proper changelog (this file)
+- All pages can now be opened in new tabs
+- Corrected Copy nickname + quality swap in Member Borrowed Items table
+- Copy items can be deleted by posting JSON to '/remove_copy' URL (UI not implemented)

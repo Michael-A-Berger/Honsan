@@ -765,7 +765,6 @@ var EntryReact = function EntryReact(props) {
             null,
             'Trn. Name:'
           ),
-          ' ',
           props.entry.trnName
         ),
         React.createElement(
@@ -798,7 +797,6 @@ var EntryReact = function EntryReact(props) {
             null,
             'Publisher:'
           ),
-          ' ',
           props.entry.publisher
         ),
         React.createElement(
@@ -998,12 +996,12 @@ var MemberBorrowedTableReact = function MemberBorrowedTableReact(props) {
         React.createElement(
           'td',
           null,
-          props.borrowed[num].nickname
+          props.borrowed[num].quality
         ),
         React.createElement(
           'td',
           null,
-          props.borrowed[num].quality
+          props.borrowed[num].nickname
         ),
         React.createElement(
           'td',
@@ -1323,14 +1321,15 @@ var CatalogReact = function CatalogReact(props) {
   if (props.entries && props.entries.length > 0) {
     var _loop3 = function _loop3(num) {
       // Creating the Entry name link function
+      var relLink = '/entry/' + props.entries[num].entryId;
       var toEntryFunc = function toEntryFunc(e) {
         e.preventDefault();
-        EditHistory('/entry/' + props.entries[num].entryId);
+        EditHistory(relLink);
         return false;
       };
       var entryLink = React.createElement(
         'a',
-        { href: '', onClick: toEntryFunc },
+        { href: relLink, onClick: toEntryFunc },
         props.entries[num].engName
       );
 
@@ -1444,15 +1443,16 @@ var MembersListReact = function MembersListReact(props) {
   // IF some Members exist...
   if (props.members.length > 0) {
     var _loop4 = function _loop4(num) {
-      // Creating the Member link function
+      // Creating the Member name link function
+      var relativeLinkToMember = '/member/' + props.members[num].memberId;
       var toMemberFunc = function toMemberFunc(e) {
         e.preventDefault();
-        EditHistory('/member/' + props.members[num].memberId);
+        EditHistory(relativeLinkToMember);
         return false;
       };
       var memberLink = React.createElement(
         'a',
-        { href: '', onClick: toMemberFunc },
+        { href: relativeLinkToMember, onClick: toMemberFunc },
         props.members[num].firstName,
         ' ',
         props.members[num].lastName
@@ -1532,14 +1532,16 @@ var AccountsListReact = function AccountsListReact(props) {
   // IF some Accounts exist... (ignore the logical assumptions)
   if (props.accounts.length > 0) {
     var _loop5 = function _loop5(num) {
+      // Creating the Account name link function
+      var relLink = '/account/' + props.accounts[num].accountId;
       var toAccountFunc = function toAccountFunc(e) {
         e.preventDefault();
-        EditHistory('/account/' + props.accounts[num].accountId);
+        EditHistory(relLink);
         return false;
       };
       var accountLink = React.createElement(
         'a',
-        { href: '', onClick: toAccountFunc },
+        { href: relLink, onClick: toAccountFunc },
         props.accounts[num].username
       );
 

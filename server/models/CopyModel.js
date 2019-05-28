@@ -194,6 +194,11 @@ CopySchema.statics.Update = (copyObj, callback) => {
   });
 };
 
+// Delete()
+CopySchema.statics.Delete = (id, callback) => {
+  CopyModel.deleteOne({ copy_id: id }, callback);
+};
+
 // Setting the entry model to the schema
 CopyModel = mongoose.model('Copy', CopySchema);
 

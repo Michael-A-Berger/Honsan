@@ -57,6 +57,9 @@ const router = (app) => {
   app.post('/make_copy',
     middleware.RequiresLogin,
     controllers.Copy.MakeCopy);
+  app.post('/remove_copy',
+    middleware.RequiresLogin,
+    controllers.Copy.RemoveCopy);
   app.post('/make_member',
     middleware.RequiresLogin,
     controllers.Member.MakeMember);
