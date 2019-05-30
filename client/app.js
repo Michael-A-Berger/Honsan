@@ -11,6 +11,8 @@
 // TEST TEST TEST
 
 // Global variables
+let customAlertContainer = {};
+let customAlert = {};
 let newEntryNavButton = {};
 let addMemberNavButton = {};
 let catalogNavButton = {};
@@ -67,16 +69,24 @@ const FillResultsDiv = (htmlID, message, timeout) => {
   // Getting the results div
   const resultsDiv = document.querySelector(htmlID);
 
-  // Showing the message
-  resultsDiv.innerHTML = `<p>${message}</p>`;
+  // IF the results div exists on the page...
+  if (resultsDiv) {
+    // Showing the message
+    resultsDiv.innerHTML = `<p>${message}</p>`;
 
-  // IF the message should be timed out...
-  if (timeout) {
-    lastResultsID = htmlID;
-    lastResultsTimeout = setTimeout(() => {
-      resultsDiv.innerHTML = '';
-    }, resultsTimer);
+    // IF the message should be timed out...
+    if (timeout) {
+      lastResultsID = htmlID;
+      lastResultsTimeout = setTimeout(() => {
+        resultsDiv.innerHTML = '';
+      }, resultsTimer);
+    }
   }
+};
+
+// CloseCustomAlertPopup()
+const CloseCustomAlertPopup = () => {
+  customAlertContainer.style.display = 'none';
 };
 
 // ::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
@@ -169,7 +179,7 @@ const AddCopy = (e) => {
       // Reloading the current app page
       FillContentByPathName(null);
 
-      // Resetting the for to its default values
+      // Resetting the form to its default values
       addCopyForm.reset();
 
       // IF there was a response message, show it
@@ -214,6 +224,29 @@ const AddMember = (e) => {
 
   // Preventing default behavior (again)
   return false;
+};
+
+// DeleteCopy()
+const DeleteCopy = (copyId, csrfToken) => {
+  // Creating the POST string
+  const dataStr = `_csrf=${csrfToken}&copyId=${copyId}`;
+
+  // Deleting the Copy
+  SendAJAX('POST', '/remove_copy', dataStr, (data) => {
+    // IF there was an error, say so
+    if (data.error) {
+      FillResultsDiv('#copy-results', `<b>ERROR:</b> ${data.message}`, false);
+    // ELSE... (there was no error)
+    } else {
+      // Reloading the current app page
+      FillContentByPathName(null);
+
+      // IF there was a response message, show it
+      if (data.message) {
+        FillResultsDiv('#copy-results', `${data.message}`, true);
+      }
+    }
+  });
 };
 
 // ChangeAccountSettings
@@ -331,6 +364,29 @@ const RenewCopy = (copyId, csrfToken) => {
 // ::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
 //  REACT METHODS
 // ::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
+
+// CustomAlertPopup()
+const CustomAlertPopup = (alertTitle, alertMessage, yesFunc) => {
+  // Creating the Yes Function wrapper function
+  const yesWrapper = () => {
+    yesFunc();
+    CloseCustomAlertPopup();
+  };
+
+  // Creating the custom alert to render
+  const alert = (<div>
+      <h1 id='custom-alert-title'>{alertTitle}</h1>
+      <p id='custom-alert-message'>{alertMessage}</p>
+      <button type='button' onClick={CloseCustomAlertPopup}>No</button>
+      <button type='button' onClick={yesWrapper}>Yes</button>
+    </div>);
+
+  // Rendering the custom alert
+  ReactDOM.render(alert, customAlert);
+
+  // Showing the custom alert
+  customAlertContainer.style.display = 'block';
+};
 
 // TestDatabaseReact()
 const TestDatabaseReact = (props) => {
@@ -489,14 +545,28 @@ const EntryCopiesTableReact = (props) => {
       let dueDate = '';
       if (props.copies[num].borrower) {
         // Creating the function for the Member link
+        const relLink = `/member/${props.copies[num].borrower}`;
         const toMemberFunc = (e) => {
           e.preventDefault();
-          EditHistory(`/member/${props.copies[num].borrower}`);
+          EditHistory(relLink);
           return false;
         };
-        memberSignedOut = <a href='' onClick={toMemberFunc}>Yes</a>;
+        memberSignedOut = <a href={relLink} onClick={toMemberFunc}>Yes</a>;
         dueDate = `${props.copies[num].dueDateStr}`;
       }
+
+      // Creating the Copy deletion method
+      const deleteTitle = 'Confirm Copy Deletion';
+      const deleteMessage = `Are you sure that you want to delete 
+                              ${props.copies[num].entryName}, ${props.copies[num].name}? 
+                              The copy will automatically be signed in before being
+                              deleted.`;
+      const deleteFunc = CustomAlertPopup.bind(this, deleteTitle, deleteMessage, () => {
+        if (memberSignedOut !== 'No') {
+          SignInCopy(props.copies[num].copyId, props.csrfToken);
+        }
+        DeleteCopy(props.copies[num].copyId, props.csrfToken);
+      });
 
       // Creating the table row React
       tableRows.push(
@@ -507,6 +577,7 @@ const EntryCopiesTableReact = (props) => {
           <td>{props.copies[num].description}</td>
           <td>{memberSignedOut}</td>
           <td>{dueDate}</td>
+          <td><button type='button' onClick={deleteFunc}>Delete?</button></td>
         </tr>,
       );
     }
@@ -542,7 +613,7 @@ const EntryReact = (props) => {
           <p><b>Media Type:</b> {props.entry.mediaType}</p>
           <div className='copies-contrainer'>
             <h2><b>Copies:</b></h2>
-            <EntryCopiesTableReact copies={props.entry.copies}/>
+            <EntryCopiesTableReact copies={props.entry.copies} csrfToken={props.csrfToken}/>
           </div>
           <div id='add-copies-container'>
             <h2>Add Copy:</h2>
@@ -607,12 +678,13 @@ const MemberBorrowedTableReact = (props) => {
     // FOR every borrowed copy, create a new table row
     for (let num = 0; num < props.borrowed.length; num++) {
       // Creaing the "To Entry" link function + React
+      const relLink = `/entry/${props.borrowed[num].entryId}`;
       const toEntryFunc = (e) => {
         e.preventDefault();
-        EditHistory(`/entry/${props.borrowed[num].entryId}`);
+        EditHistory(relLink);
         return false;
       };
-      const entryLink = <a href='' onClick={toEntryFunc}>{props.borrowed[num].entryName}</a>;
+      const entryLink = <a href={relLink} onClick={toEntryFunc}>{props.borrowed[num].entryName}</a>;
 
       // Creating the Sign In + Renew buttons
       const bindedSignIn = SignInCopy.bind(this, props.borrowed[num].copyId, props.csrfToken);
@@ -914,7 +986,7 @@ const RemoveNavButtonSelectedClass = () => {
   logoutNavButton.classList.remove(navbarSelectedClass);
 };
 
-// FillContentByPathName()
+// FillContentByPathName() - defining the function, see declaration at top
 FillContentByPathName = () => {
   // Removing the selected nav button class
   RemoveNavButtonSelectedClass();
@@ -1025,6 +1097,10 @@ window.onpopstate = FillContentByPathName;
 const setup = () => {
   // Getting the React container
   reactContainer = document.querySelector('#content');
+
+  // Getting the Custom Alert container + alert div
+  customAlertContainer = document.querySelector('#custom-alert-container');
+  customAlert = document.querySelector('#custom-alert');
 
   // Getting the navbar buttons
   newEntryNavButton = document.querySelector('#navbar-new-entry');

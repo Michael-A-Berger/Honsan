@@ -13,6 +13,8 @@
 // TEST TEST TEST
 
 // Global variables
+var customAlertContainer = {};
+var customAlert = {};
 var newEntryNavButton = {};
 var addMemberNavButton = {};
 var catalogNavButton = {};
@@ -71,16 +73,24 @@ var FillResultsDiv = function FillResultsDiv(htmlID, message, timeout) {
   // Getting the results div
   var resultsDiv = document.querySelector(htmlID);
 
-  // Showing the message
-  resultsDiv.innerHTML = '<p>' + message + '</p>';
+  // IF the results div exists on the page...
+  if (resultsDiv) {
+    // Showing the message
+    resultsDiv.innerHTML = '<p>' + message + '</p>';
 
-  // IF the message should be timed out...
-  if (timeout) {
-    lastResultsID = htmlID;
-    lastResultsTimeout = setTimeout(function () {
-      resultsDiv.innerHTML = '';
-    }, resultsTimer);
+    // IF the message should be timed out...
+    if (timeout) {
+      lastResultsID = htmlID;
+      lastResultsTimeout = setTimeout(function () {
+        resultsDiv.innerHTML = '';
+      }, resultsTimer);
+    }
   }
+};
+
+// CloseCustomAlertPopup()
+var CloseCustomAlertPopup = function CloseCustomAlertPopup() {
+  customAlertContainer.style.display = 'none';
 };
 
 // ::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
@@ -173,7 +183,7 @@ var AddCopy = function AddCopy(e) {
       // Reloading the current app page
       FillContentByPathName(null);
 
-      // Resetting the for to its default values
+      // Resetting the form to its default values
       addCopyForm.reset();
 
       // IF there was a response message, show it
@@ -218,6 +228,29 @@ var AddMember = function AddMember(e) {
 
   // Preventing default behavior (again)
   return false;
+};
+
+// DeleteCopy()
+var DeleteCopy = function DeleteCopy(copyId, csrfToken) {
+  // Creating the POST string
+  var dataStr = '_csrf=' + csrfToken + '&copyId=' + copyId;
+
+  // Deleting the Copy
+  SendAJAX('POST', '/remove_copy', dataStr, function (data) {
+    // IF there was an error, say so
+    if (data.error) {
+      FillResultsDiv('#copy-results', '<b>ERROR:</b> ' + data.message, false);
+      // ELSE... (there was no error)
+    } else {
+      // Reloading the current app page
+      FillContentByPathName(null);
+
+      // IF there was a response message, show it
+      if (data.message) {
+        FillResultsDiv('#copy-results', '' + data.message, true);
+      }
+    }
+  });
 };
 
 // ChangeAccountSettings
@@ -335,6 +368,47 @@ var RenewCopy = function RenewCopy(copyId, csrfToken) {
 // ::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
 //  REACT METHODS
 // ::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
+
+// CustomAlertPopup()
+var CustomAlertPopup = function CustomAlertPopup(alertTitle, alertMessage, yesFunc) {
+  // Creating the Yes Function wrapper function
+  var yesWrapper = function yesWrapper() {
+    yesFunc();
+    CloseCustomAlertPopup();
+  };
+
+  // Creating the custom alert to render
+  var alert = React.createElement(
+    'div',
+    null,
+    React.createElement(
+      'h1',
+      { id: 'custom-alert-title' },
+      alertTitle
+    ),
+    React.createElement(
+      'p',
+      { id: 'custom-alert-message' },
+      alertMessage
+    ),
+    React.createElement(
+      'button',
+      { type: 'button', onClick: CloseCustomAlertPopup },
+      'No'
+    ),
+    React.createElement(
+      'button',
+      { type: 'button', onClick: yesWrapper },
+      'Yes'
+    )
+  );
+
+  // Rendering the custom alert
+  ReactDOM.render(alert, customAlert);
+
+  // Showing the custom alert
+  customAlertContainer.style.display = 'block';
+};
 
 // TestDatabaseReact()
 var TestDatabaseReact = function TestDatabaseReact(props) {
@@ -653,18 +727,29 @@ var EntryCopiesTableReact = function EntryCopiesTableReact(props) {
       var dueDate = '';
       if (props.copies[num].borrower) {
         // Creating the function for the Member link
+        var relLink = '/member/' + props.copies[num].borrower;
         var toMemberFunc = function toMemberFunc(e) {
           e.preventDefault();
-          EditHistory('/member/' + props.copies[num].borrower);
+          EditHistory(relLink);
           return false;
         };
         memberSignedOut = React.createElement(
           'a',
-          { href: '', onClick: toMemberFunc },
+          { href: relLink, onClick: toMemberFunc },
           'Yes'
         );
         dueDate = '' + props.copies[num].dueDateStr;
       }
+
+      // Creating the Copy deletion method
+      var deleteTitle = 'Confirm Copy Deletion';
+      var deleteMessage = 'Are you sure that you want to delete \n                              ' + props.copies[num].entryName + ', ' + props.copies[num].name + '? \n                              The copy will automatically be signed-in before being\n                              deleted.';
+      var deleteFunc = CustomAlertPopup.bind(undefined, deleteTitle, deleteMessage, function () {
+        if (memberSignedOut !== 'No') {
+          SignInCopy(props.copies[num].copyId, props.csrfToken);
+        }
+        DeleteCopy(props.copies[num].copyId, props.csrfToken);
+      });
 
       // Creating the table row React
       tableRows.push(React.createElement(
@@ -699,6 +784,15 @@ var EntryCopiesTableReact = function EntryCopiesTableReact(props) {
           'td',
           null,
           dueDate
+        ),
+        React.createElement(
+          'td',
+          null,
+          React.createElement(
+            'button',
+            { type: 'button', onClick: deleteFunc },
+            'Delete?'
+          )
         )
       ));
     };
@@ -822,7 +916,7 @@ var EntryReact = function EntryReact(props) {
               'Copies:'
             )
           ),
-          React.createElement(EntryCopiesTableReact, { copies: props.entry.copies })
+          React.createElement(EntryCopiesTableReact, { copies: props.entry.copies, csrfToken: props.csrfToken })
         ),
         React.createElement(
           'div',
@@ -954,14 +1048,15 @@ var MemberBorrowedTableReact = function MemberBorrowedTableReact(props) {
   if (props.borrowed && props.borrowed.length > 0) {
     var _loop2 = function _loop2(num) {
       // Creaing the "To Entry" link function + React
+      var relLink = '/entry/' + props.borrowed[num].entryId;
       var toEntryFunc = function toEntryFunc(e) {
         e.preventDefault();
-        EditHistory('/entry/' + props.borrowed[num].entryId);
+        EditHistory(relLink);
         return false;
       };
       var entryLink = React.createElement(
         'a',
-        { href: '', onClick: toEntryFunc },
+        { href: relLink, onClick: toEntryFunc },
         props.borrowed[num].entryName
       );
 
@@ -1716,6 +1811,10 @@ window.onpopstate = FillContentByPathName;
 var setup = function setup() {
   // Getting the React container
   reactContainer = document.querySelector('#content');
+
+  // Getting the Custom Alert container + alert div
+  customAlertContainer = document.querySelector('#custom-alert-container');
+  customAlert = document.querySelector('#custom-alert');
 
   // Getting the navbar buttons
   newEntryNavButton = document.querySelector('#navbar-new-entry');

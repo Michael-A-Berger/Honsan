@@ -10,3 +10,11 @@
 - All pages can now be opened in new tabs
 - Corrected Copy nickname + quality swap in Member Borrowed Items table
 - Copy items can be deleted by posting JSON to '/remove_copy' URL (UI not implemented)
+
+~~~~~~~~~~~~~~
+~~~ v00.30 ~~~
+~~~~~~~~~~~~~~
+
+- Changed auto-created links in Entry Copy + Member Signouts tables to be open-able in new tabs
+- Implemented Entry Copy deletion UI
+- Added Custom Alert functionality (currently used to confirm Copy deletion)
