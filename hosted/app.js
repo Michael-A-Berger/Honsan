@@ -22,6 +22,8 @@ var memberListNavButton = {};
 var accountListNavButton = {};
 var logoutNavButton = {};
 var reactContainer = {};
+var notificationDiv = {};
+var notificationTimeout = -1;
 var lastResultsID = '';
 var lastResultsTimeout = -1;
 
@@ -36,6 +38,8 @@ var catalogPath = '/catalog';
 var membersPath = '/members';
 var accountsPath = '/accounts';
 var logoutPath = '/logout';
+var notificationSuccessTimer = 4000;
+var notificationErrorTimer = 10000;
 var resultsTimer = 4000;
 
 // ::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
@@ -60,6 +64,25 @@ var EditHistory = function EditHistory(pathname) {
 // GetEditHistoryFunc()
 var GetEditHistoryFunc = function GetEditHistoryFunc(path) {
   return EditHistory.bind(undefined, path);
+};
+
+// FillNotificationDiv()
+var FillNotificationDiv = function FillNotificationDiv(message, error) {
+  // Clearing out the previous notification timeout (if one exists)
+  if (notificationTimeout !== -1) {
+    clearTimeout(notificationTimeout);
+    notificationTimeout = -1;
+  }
+
+  // Showing the message
+  notificationDiv.innerHTML = '<p>' + message + '</p>';
+  notificationDiv.style.display = 'block';
+
+  // Set the notification timeout
+  notificationTimeout = setTimeout(function () {
+    notificationDiv.innerHTML = '';
+    notificationDiv.style.display = 'none';
+  }, error ? notificationErrorTimer : notificationSuccessTimer);
 };
 
 // FillResultsDiv()
@@ -230,6 +253,29 @@ var AddMember = function AddMember(e) {
   return false;
 };
 
+// DeleteEntry()
+var DeleteEntry = function DeleteEntry(entryId, csrfToken) {
+  // Creating the Entry deletion POST string
+  var postStr = '_csrf=' + csrfToken + '&entryId=' + entryId;
+
+  // Deleting the Entry
+  SendAJAX('POST', '/remove_entry', postStr, function (data) {
+    // IF there was an error, say so
+    if (data.error) {
+      FillNotificationDiv('<b>ERROR:</b> ' + data.error, true);
+      // ELSE... (there was no error)
+    } else {
+      // Loading the Catalog page
+      FillContentByPathName(catalogPath);
+
+      // IF there was a response message, show it
+      if (data.message) {
+        FillNotificationDiv('' + data.message, false);
+      }
+    }
+  });
+};
+
 // DeleteCopy()
 var DeleteCopy = function DeleteCopy(copyId, csrfToken) {
   // Creating the POST string
@@ -248,6 +294,29 @@ var DeleteCopy = function DeleteCopy(copyId, csrfToken) {
       // IF there was a response message, show it
       if (data.message) {
         FillResultsDiv('#copy-results', '' + data.message, true);
+      }
+    }
+  });
+};
+
+// DeleteCopiesOfEntry()
+var DeleteCopiesOfEntry = function DeleteCopiesOfEntry(entryId, csrfToken) {
+  // Creating the POST string
+  var dataStr = '_csrf=' + csrfToken + '&' + entryId;
+
+  // Deleting the Copies of the Entry
+  SendAJAX('POST', '/remove_copy_entry', function (data) {
+    // IF there was an error, say so
+    if (data.error) {
+      FillNotificationDiv('<b>ERROR:</b> ' + data.error, true);
+      // ELSE... (there was no error)
+    } else {
+      // Reloading the current app page
+      FillContentByPathName(null);
+
+      // IF there was a response message, show it
+      if (data.message) {
+        FillNotificationDiv('' + data.message, false);
       }
     }
   });
@@ -317,6 +386,29 @@ var SignOutByNickname = function SignOutByNickname(e) {
 
   // Preventing default behavior (again)
   return false;
+};
+
+// SignInEntry()
+var SignInEntry = function SignInEntry(entryId, csrfToken) {
+  // Creating the POST string
+  var dataStr = '_csrf=' + csrfToken + '&entryId=' + entryId;
+
+  // Signing In all the Entry Copies
+  SendAJAX('POST', 'signin_entry', dataStr, function (data) {
+    // IF there was an error, say so
+    if (data.error) {
+      FillNotificationDiv('<b>ERROR:</b> ' + data.error, true);
+      // ELSE... (there was no error)
+    } else {
+      // Loading the Entry page
+      FillContentByPathName(null);
+
+      // IF there was a response message, show it
+      if (data.message) {
+        FillNotificationDiv('' + data.message, false);
+      }
+    }
+  });
 };
 
 // SignInCopy()
@@ -743,7 +835,7 @@ var EntryCopiesTableReact = function EntryCopiesTableReact(props) {
 
       // Creating the Copy deletion method
       var deleteTitle = 'Confirm Copy Deletion';
-      var deleteMessage = 'Are you sure that you want to delete \n                              ' + props.copies[num].entryName + ', ' + props.copies[num].name + '? \n                              The copy will automatically be signed-in before being\n                              deleted.';
+      var deleteMessage = 'Are you sure that you want to delete\n                              ' + props.copies[num].entryName + ', ' + props.copies[num].name + '? \n                              The copy will automatically be signed in before being\n                              deleted.';
       var deleteFunc = CustomAlertPopup.bind(undefined, deleteTitle, deleteMessage, function () {
         if (memberSignedOut !== 'No') {
           SignInCopy(props.copies[num].copyId, props.csrfToken);
@@ -827,6 +919,15 @@ var EntryReact = function EntryReact(props) {
   // Defining the React to send back
   var returnReact = '';
 
+  // Creating the Entry deletion method
+  var deleteTitle = 'Confirm Entry Deletion';
+  var deleteMessage = 'Are you sure that you want to delete the entire\n                          ' + props.entry.engName + ' entry? All copies of the\n                          entry will be signed in before being deleted.';
+  var deleteFunc = CustomAlertPopup.bind(undefined, deleteTitle, deleteMessage, function () {
+    SignInEntry(props.entry.entryId, props.csrfToken);
+    DeleteCopiesOfEntry(props.entry.entryId, props.csrfToken);
+    DeleteEntry(props.entry.entryId, props.csrfToken);
+  });
+
   // IF the entry ID exist...
   if (props.entry) {
     returnReact = React.createElement(
@@ -903,6 +1004,11 @@ var EntryReact = function EntryReact(props) {
           ),
           ' ',
           props.entry.mediaType
+        ),
+        React.createElement(
+          'button',
+          { type: 'button', onClick: deleteFunc },
+          'Delete?'
         ),
         React.createElement(
           'div',
@@ -1689,7 +1795,7 @@ var RemoveNavButtonSelectedClass = function RemoveNavButtonSelectedClass() {
   logoutNavButton.classList.remove(navbarSelectedClass);
 };
 
-// FillContentByPathName()
+// FillContentByPathName() - defining the function, see declaration at top
 FillContentByPathName = function FillContentByPathName() {
   // Removing the selected nav button class
   RemoveNavButtonSelectedClass();
@@ -1815,6 +1921,9 @@ var setup = function setup() {
   // Getting the Custom Alert container + alert div
   customAlertContainer = document.querySelector('#custom-alert-container');
   customAlert = document.querySelector('#custom-alert');
+
+  // Getting the Notification div
+  notificationDiv = document.querySelector('#notification');
 
   // Getting the navbar buttons
   newEntryNavButton = document.querySelector('#navbar-new-entry');

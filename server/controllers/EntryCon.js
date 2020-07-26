@@ -43,34 +43,46 @@ const MakeEntry = (rq, rp) => {
   });
 };
 
-// GetCatalogue()
-const GetCatalogue = (request, response) => {
+// RemoveEntry()
+const RemoveEntry = (request, rp) => {
+  // Setting the request to be assignable
   const rq = request;
-  const rp = response;
 
-  // Actually getting the catalogue
-  return _Entry.Model.GetAll((err, docs) => {
-    // Error checking
-    if (err) {
+  // Parsing the Entry ID
+  rq.body.entryId = `${rq.body.entryId}`;
+
+  // Trying to get the Entry (to see if the ID is valid)
+  const v = _Entry.Model.GetByID(rq.body.entryId, (error, doc) => {
+    // Creating an assignable Entry
+    const docEntry = doc;
+
+    // Error Checking
+    if (error) {
       return models.UnexpectedServerError(rq, rp);
     }
-    if (docs.length <= 0) {
-      return rp.code(400).json({ error: 'No entries to retrieve (database is empty)' });
+    if (!docEntry) {
+      return rp.status(400).json({ error: 'Specified Entry does not exist' });
     }
 
-    // Returning the entire catalogue
-    return rp.json({ entries: docs });
+    // Deleting the Entry
+    return _Entry.Model.Delete(docEntry.entry_id, (err2) => {
+      if (err2) {
+        console.log(err2);
+        return models.UnexpectedServerError(rq, rp);
+      }
+      console.log(`- Deleted [${docEntry.en_name}] Entry at ${models.CurrentTime()}`);
+      return rp.status(200).json({ message: 'Entry deleted' });
+    });
   });
+
+  // Returning the dummy value
+  return v;
 };
 
 // GetCatalog()
-const GetCatalog = (request, response) => {
-  // Setting the Request & Response to assignable objects
-  const rq = request;
-  const rp = response;
-
+const GetCatalog = (rq, rp) => {
   // Getting the full catalog
-  return _Entry.Model.GetAll((err, docs) => {
+  const v = _Entry.Model.GetAll((err, docs) => {
     // IF there was an error, say something about it
     if (err) {
       return models.UnexpectedServerError(rq, rp);
@@ -78,17 +90,24 @@ const GetCatalog = (request, response) => {
 
     // Putting all the Entries into the proper format
     const currentEntries = [];
-    for (let num = 0; num < docs.length; num++) {
+    for (let num = 0; num < docs.length; ++num) {
       currentEntries.push(_Entry.Model.ToFrontEnd(docs[num]));
     }
 
     // Returning the ENTIRE catalog [change in future]
     return rp.json({ entries: currentEntries });
   });
+
+  // Returning the dummy value
+  return v;
 };
 
 // GetEntry()
-const GetEntry = (rq, rp) => {
+const GetEntry = (request, rp) => {
+  // Recasting the ID to be a string
+  const rq = request;
+  rq.query.id = `${rq.query.id}`;
+
   // Getting the Entry object
   const v = _Entry.Model.GetByID(rq.query.id, (error, docEntry) => {
     if (error) {
@@ -135,14 +154,14 @@ const GetEntry = (rq, rp) => {
     });
   });
 
-  // Returning the dummy balue
+  // Returning the dummy value
   return v;
 };
 
 // Defining the exports
 module.exports = {
   MakeEntry,
-  GetCatalogue,
+  RemoveEntry,
   GetCatalog,
   GetEntry,
 };

@@ -178,7 +178,7 @@ CopySchema.statics.Update = (copyObj, callback) => {
   CopyModel.findOne({ copy_id: copyObj.copy_id }).exec((error, doc) => {
     // IF no Copy was found, return with just the error
     if (error) {
-      return callback(error, false);
+      return callback(error);
     }
 
     // Updating the retreived Copy document
@@ -194,9 +194,19 @@ CopySchema.statics.Update = (copyObj, callback) => {
   });
 };
 
+// UpdateEntryBorrower()
+CopySchema.statics.UpdateEntryBorrower = (entryId, memberId, callback) => {
+  CopyModel.updateMany({ entry_id: entryId }, { borrower: memberId }, callback);
+};
+
 // Delete()
 CopySchema.statics.Delete = (id, callback) => {
   CopyModel.deleteOne({ copy_id: id }, callback);
+};
+
+// DeleteByEntry()
+CopySchema.statics.DeleteByEntry = (entryId, callback) => {
+  CopyModel.deleteMany({ entry_id: entryId }, callback);
 };
 
 // Setting the entry model to the schema

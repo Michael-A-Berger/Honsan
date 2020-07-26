@@ -39,6 +39,24 @@ h1 {
 #custom-alert button:active {
   color: #9999FF; }
 
+#notification {
+  display: none;
+  z-index: 150;
+  position: fixed;
+  left: 50%;
+  top: 98%;
+  transform: translate(-50%, -98%);
+  min-width: 200px;
+  border-style: solid;
+  border-radius: 5px;
+  border-width: 2px;
+  border-color: #CCCCCC;
+  background-color: #FFFFFF; }
+
+#notification p {
+  padding: 0px 5px 0px 5px;
+  margin: 0px; }
+
 #banner-ad {
   display: block;
   margin: 0 auto;

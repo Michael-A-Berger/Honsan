@@ -20,6 +20,8 @@ let memberListNavButton = {};
 let accountListNavButton = {};
 let logoutNavButton = {};
 let reactContainer = {};
+let notificationDiv = {};
+let notificationTimeout = -1;
 let lastResultsID = '';
 let lastResultsTimeout = -1;
 
@@ -34,6 +36,8 @@ const catalogPath = '/catalog';
 const membersPath = '/members';
 const accountsPath = '/accounts';
 const logoutPath = '/logout';
+const notificationSuccessTimer = 4000;
+const notificationErrorTimer = 10000;
 const resultsTimer = 4000;
 
 // ::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
@@ -57,6 +61,25 @@ const EditHistory = (pathname) => {
 
 // GetEditHistoryFunc()
 const GetEditHistoryFunc = path => EditHistory.bind(this, path);
+
+// FillNotificationDiv()
+const FillNotificationDiv = (message, error) => {
+  // Clearing out the previous notification timeout (if one exists)
+  if (notificationTimeout !== -1) {
+    clearTimeout(notificationTimeout);
+    notificationTimeout = -1;
+  }
+
+  // Showing the message
+  notificationDiv.innerHTML = `<p>${message}</p>`;
+  notificationDiv.style.display = 'block';
+
+  // Set the notification timeout
+  notificationTimeout = setTimeout(() => {
+    notificationDiv.innerHTML = '';
+    notificationDiv.style.display = 'none';
+  }, (error ? notificationErrorTimer : notificationSuccessTimer));
+};
 
 // FillResultsDiv()
 const FillResultsDiv = (htmlID, message, timeout) => {
@@ -226,6 +249,29 @@ const AddMember = (e) => {
   return false;
 };
 
+// DeleteEntry()
+const DeleteEntry = (entryId, csrfToken) => {
+  // Creating the Entry deletion POST string
+  const postStr = `_csrf=${csrfToken}&entryId=${entryId}`;
+
+  // Deleting the Entry
+  SendAJAX('POST', '/remove_entry', postStr, (data) => {
+    // IF there was an error, say so
+    if (data.error) {
+      FillNotificationDiv(`<b>ERROR:</b> ${data.error}`, true);
+    // ELSE... (there was no error)
+    } else {
+      // Loading the Catalog page
+      FillContentByPathName(catalogPath);
+
+      // IF there was a response message, show it
+      if (data.message) {
+        FillNotificationDiv(`${data.message}`, false);
+      }
+    }
+  });
+};
+
 // DeleteCopy()
 const DeleteCopy = (copyId, csrfToken) => {
   // Creating the POST string
@@ -244,6 +290,29 @@ const DeleteCopy = (copyId, csrfToken) => {
       // IF there was a response message, show it
       if (data.message) {
         FillResultsDiv('#copy-results', `${data.message}`, true);
+      }
+    }
+  });
+};
+
+// DeleteCopiesOfEntry()
+const DeleteCopiesOfEntry = (entryId, csrfToken) => {
+  // Creating the POST string
+  const dataStr = `_csrf=${csrfToken}&${entryId}`;
+
+  // Deleting the Copies of the Entry
+  SendAJAX('POST', '/remove_copy_entry', (data) => {
+    // IF there was an error, say so
+    if (data.error) {
+      FillNotificationDiv(`<b>ERROR:</b> ${data.error}`, true);
+    // ELSE... (there was no error)
+    } else {
+      // Reloading the current app page
+      FillContentByPathName(null);
+
+      // IF there was a response message, show it
+      if (data.message) {
+        FillNotificationDiv(`${data.message}`, false);
       }
     }
   });
@@ -313,6 +382,29 @@ const SignOutByNickname = (e) => {
 
   // Preventing default behavior (again)
   return false;
+};
+
+// SignInEntry()
+const SignInEntry = (entryId, csrfToken) => {
+  // Creating the POST string
+  const dataStr = `_csrf=${csrfToken}&entryId=${entryId}`;
+
+  // Signing In all the Entry Copies
+  SendAJAX('POST', 'signin_entry', dataStr, (data) => {
+    // IF there was an error, say so
+    if (data.error) {
+      FillNotificationDiv(`<b>ERROR:</b> ${data.error}`, true);
+    // ELSE... (there was no error)
+    } else {
+      // Loading the Entry page
+      FillContentByPathName(null);
+
+      // IF there was a response message, show it
+      if (data.message) {
+        FillNotificationDiv(`${data.message}`, false);
+      }
+    }
+  });
 };
 
 // SignInCopy()
@@ -557,7 +649,7 @@ const EntryCopiesTableReact = (props) => {
 
       // Creating the Copy deletion method
       const deleteTitle = 'Confirm Copy Deletion';
-      const deleteMessage = `Are you sure that you want to delete 
+      const deleteMessage = `Are you sure that you want to delete
                               ${props.copies[num].entryName}, ${props.copies[num].name}? 
                               The copy will automatically be signed in before being
                               deleted.`;
@@ -595,6 +687,17 @@ const EntryReact = (props) => {
   // Defining the React to send back
   let returnReact = '';
 
+  // Creating the Entry deletion method
+  const deleteTitle = 'Confirm Entry Deletion';
+  const deleteMessage = `Are you sure that you want to delete the entire
+                          ${props.entry.engName} entry? All copies of the
+                          entry will be signed in before being deleted.`;
+  const deleteFunc = CustomAlertPopup.bind(this, deleteTitle, deleteMessage, () => {
+    SignInEntry(props.entry.entryId, props.csrfToken);
+    DeleteCopiesOfEntry(props.entry.entryId, props.csrfToken);
+    DeleteEntry(props.entry.entryId, props.csrfToken);
+  });
+
   // IF the entry ID exist...
   if (props.entry) {
     returnReact = (
@@ -611,6 +714,7 @@ const EntryReact = (props) => {
             {props.entry.publisher}
           </p>
           <p><b>Media Type:</b> {props.entry.mediaType}</p>
+          <button type='button' onClick={deleteFunc}>Delete?</button>
           <div className='copies-contrainer'>
             <h2><b>Copies:</b></h2>
             <EntryCopiesTableReact copies={props.entry.copies} csrfToken={props.csrfToken}/>
@@ -1101,6 +1205,9 @@ const setup = () => {
   // Getting the Custom Alert container + alert div
   customAlertContainer = document.querySelector('#custom-alert-container');
   customAlert = document.querySelector('#custom-alert');
+
+  // Getting the Notification div
+  notificationDiv = document.querySelector('#notification');
 
   // Getting the navbar buttons
   newEntryNavButton = document.querySelector('#navbar-new-entry');

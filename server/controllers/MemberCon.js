@@ -45,7 +45,11 @@ const MakeMember = (rq, rp) => {
 };
 
 // GetMember()
-const GetMember = (rq, rp) => {
+const GetMember = (request, rp) => {
+  // Recasting the ID to be a string
+  const rq = request;
+  rq.query.id = `${rq.query.id}`;
+
   // Searching for the specificed member
   const v = _Member.Model.GetByID(rq.query.id, (error1, docMember) => {
     // IF something went wrong, say so

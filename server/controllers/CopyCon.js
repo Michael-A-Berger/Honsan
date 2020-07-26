@@ -63,7 +63,13 @@ const MakeCopy = (rq, rp) => {
 };
 
 // RemoveCopy()
-const RemoveCopy = (rq, rp) => {
+const RemoveCopy = (request, rp) => {
+  // Setting the request to be assignable
+  const rq = request;
+
+  // Parsing the Copy ID
+  rq.body.copyId = `${rq.body.copyId}`;
+
   // Trying to get the Copy (to see if the ID is valid)
   const v = _Copy.Model.GetByID(rq.body.copyId, (err1, doc) => {
     // Creating an assignable Copy
@@ -92,9 +98,67 @@ const RemoveCopy = (rq, rp) => {
   return v;
 };
 
+// RemoveCopiesByEntry()
+const RemoveCopiesByEntry = (request, rp) => {
+  // Recasting the ID to be a string
+  const rq = request;
+  rq.body.entryId = `${rq.body.entryId}`;
+
+  // Getting the various Copies of the Entry
+  return _Copy.Model.GetAllOfEntry(rq.body.entryId, (error1, copies) => {
+    // Error Checking
+    if (error1) {
+      console.log(error1);
+      return models.UnexpectedServerError(rq, rp);
+    }
+    if (!copies) {
+      return rp.json({ message: 'There are no copies to remove.' });
+    }
+
+    // Removing the copies from the system
+    return _Copy.Model.DeleteByEntry(rq.body.entryId, (error2) => {
+      if (error2) {
+        console.log(error2);
+        return models.UnexpectedServerError(rq, rp);
+      }
+      const entryName = copies[0].entry_name;
+      console.log(`- Deleted all Copies of [${entryName}] Entry at ${models.CurrentTime()}`);
+      return rp.status(200).json({ message: `All copies of ${entryName} were deleted.` });
+    });
+  });
+};
+
+// GetCopiesOfEntry()
+const GetCopiesOfEntry = (request, rp) => {
+  // Recasting the ID to be a string
+  const rq = request;
+  rq.query.id = `${rq.query.id}`;
+
+  // Getting all the copies belonging to a single Entry
+  const v = _Copy.Model.GetAllOfEntry(rq.query.id, (error, docCopies) => {
+    // IF there was an error, say something about it
+    if (error) {
+      console.log(error);
+      return models.UnexpectedServerError(rq, rp);
+    }
+
+    // Putting all the Copies into the proper format
+    const currentCopies = [];
+    for (let num = 0; num < docCopies.length; ++num) {
+      currentCopies.push(_Copy.Model.ToFrontEnd(docCopies[num]));
+    }
+
+    // Returning the Copies
+    return rp.json({ copies: currentCopies });
+  });
+
+  // Returning the dummy values
+  return v;
+};
+
 // SignOutByNickname()
 const SignOutByNickname = (request, rp) => {
-  // Creating an assignable copy of Request
+  // Setting the request to be assignable
   const rq = request;
 
   // IF a nickname or member ID isn't specified, say so
@@ -194,6 +258,36 @@ const SignInByID = (request, rp) => {
   });
 };
 
+// SignInByEntryID()
+const SignInByEntryID = (request, rp) => {
+  // Recasting the ID to be a string
+  const rq = request;
+  rq.body.entryId = `${rq.body.entryId}`;
+
+  // Getting the various Copies of the Entry
+  return _Copy.Model.GetAllOfEntry(rq.body.entryId, (error1, copies) => {
+    // Error Checking
+    if (error1) {
+      console.log(error1);
+      return models.UnexpectedServerError(rq, rp);
+    }
+    if (!copies) {
+      return rp.status(400).json({ error: 'Entry does not have any copies' });
+    }
+
+    // Setting all of the Entry Copy borrowers to null
+    return _Copy.Model.UpdateEntryBorrower(rq.body.entryId, null, (error2) => {
+      if (error2) {
+        console.log(error2);
+        return models.UnexpectedServerError(rq, rp);
+      }
+      const entryName = copies[0].entry_name;
+      console.log(`- All Copies of [${entryName}] Entry were signed in at [${models.CurrentTime()}]`);
+      return rp.json({ message: `All copies of ${entryName} were signed in` });
+    });
+  });
+};
+
 // RenewByID()
 const RenewByID = (request, rp) => {
   // Setting the request to be assignable
@@ -237,7 +331,10 @@ const RenewByID = (request, rp) => {
 module.exports = {
   MakeCopy,
   RemoveCopy,
+  RemoveCopiesByEntry,
+  GetCopiesOfEntry,
   SignOutByNickname,
   SignInByID,
+  SignInByEntryID,
   RenewByID,
 };

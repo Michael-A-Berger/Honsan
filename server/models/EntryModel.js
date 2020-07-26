@@ -134,6 +134,11 @@ EntrySchema.statics.Search = (term, callback) => {
   EntryModel.find(searchObject).select(SelectString()).exec(callback);
 };
 
+// Delete()
+EntrySchema.statics.Delete = (id, callback) => {
+  EntryModel.deleteOne({ entry_id: id }, callback);
+};
+
 // Setting the entry model to the schema
 EntryModel = mongoose.model('Entry', EntrySchema);
 

@@ -18,3 +18,18 @@
 - Changed auto-created links in Entry Copy + Member Signouts tables to be open-able in new tabs
 - Implemented Entry Copy deletion UI
 - Added Custom Alert functionality (currently used to confirm Copy deletion)
+
+~~~~~~~~~~~~~~
+~~~ v00.31 ~~~
+~~~~~~~~~~~~~~
+
+- Removed "GetCatalogue()" method from Entry Controller (it was an old Entry Catalog retrieval method)
+- Cleaned up some comments in the Entry Controllers and Copy Controllers
+- Recasted all of the Query ID fields in all the Controller Get methods to be strings
+- Copy items can be signed in by Entry ID by posting JSON to '/signin_entry' URL
+- Copy items can be deleted by Entry ID by posting JSON to '/remove_copy_entry' URL
+- Entry items can be deleted by posting JSON to '/remove_entry' URL
+- 
+- Created Notification feature (only shows up when deleting Entry items)
+- Coppies of an Entry can be retrieved from the Mongo database by URL ('/get_copies_of_entry')
+- 
