@@ -50,7 +50,7 @@
     "csurf": "^1.9.0",
     "event-stream": "^3.3.4",
     "express": "^4.16.4",
-    "express-handlebars": "^3.0.0",
+    "express-handlebars": "^5.3.1",
     "express-session": "^1.15.6",
     "mongoose": "^5.3.10",
     "serve-favicon": "^2.5.0",
